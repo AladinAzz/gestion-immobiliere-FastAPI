@@ -260,8 +260,7 @@ class Vente(Base):
 # Create the session maker
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Create the tables in the database (if not already created)
-Base.metadata.create_all(bind=engine)
+
 
 
 
