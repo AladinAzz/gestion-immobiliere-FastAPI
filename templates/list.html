@@ -1,102 +1,120 @@
-<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="../static/pic.png" />
-    <link rel="stylesheet" href="../static/list.css">
-    <title>{{title}}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <title>AADL 2.0</title>
+    <style>
+        .carousel-item img {
+            transition: transform 0.3s ease;
+        }
 
+        .carousel-item:hover img {
+            transform: scale(1.1);
+        }
+    </style>
 </head>
-<body>
-    <nav class="navbar">
+<body class="bg-gray-100 font-roboto">
+    <nav class="bg-black text-white p-4 flex justify-between items-center">
         <div class="logo">
-            <a href="/"><img src="../static/pic.png" alt="aadl 2.0"></a>
-           </div>
-        <ul class="nav-links">
-            <li><a href="/">Accueil</a></li>
-            <li><a href="/list">Nos Propriétés</a></li>
-            <li><a href="../login/logc.php">Connexion</a></li>
+            <a href="/">
+                <img alt="Logo of AADL 2.0 with a modern house icon" class="h-12 w-12" height="60" src="../static/pic.png" width="60"/>
+            </a>
+        </div>
+        <ul class="flex space-x-6">
+            <li><a class="hover:text-orange-500" href="/">Accueil</a></li>
+            <li><a class="hover:text-orange-500" href="/list">Nos Propriétés</a></li>
+            <li><a class="hover:text-orange-500" href="../login/logc.php">Connexion</a></li>
         </ul>
     </nav>
-
-    <header class="hero">
-        <div class="hero-content">
-            <h1>Découvrez Nos Propriétés</h1>
-            <p>Trouvez la maison ou l'appartement de vos rêves parmi notre sélection exclusive.</p>
+    <header class="hero bg-cover bg-center text-white h-screen flex flex-col justify-center items-center text-center" style="background-image: url('../static/japanese-culture-with-moving-car.jpg');">
+        <div class="bg-black bg-opacity-50 p-8 rounded-lg">
+            <h1 class="text-5xl font-bold mb-4">Découvrez Nos Propriétés</h1>
+            <p class="text-xl mb-8">Trouvez la maison ou l'appartement de vos rêves parmi notre sélection exclusive.</p>
         </div>
     </header>
-   
-    <section class="property-carousel">
-        <h2>Maisons</h2>
-        <div class="carousel-container">
-            <button class="prev" onclick="scrollLeft('maisons')">&#10094;</button>
-            <div class="carousel" id="maisons">
-                <div class="carousel-item">
-                    <img src="../static/assets/images/maison1.jpg" alt="Maison 1">
-                    <button class="btn-details">Voir Détails</button>
-                </div>
-                <div class="carousel-item">
-                    <img src="../static/assets/images/maison2.jpg" alt="Maison 2">
-                    <button class="btn-details">Voir Détails</button>
-                </div>
-                <div class="carousel-item">
-                    <img src="../static/assets/images/maison3.jpg" alt="Maison 3">
-                    <button class="btn-details">Voir Détails</button>
-                </div>
-            </div>
-            <button class="next" onclick="scrollRight('maisons')">&#10095;</button>
+    <section class="property-carousel my-16">
+        <h2 class="text-3xl font-bold text-center mb-8">Maisons</h2>
+        <div class="carousel-container relative flex items-center justify-center">
+            <button class="prev absolute left-0 bg-black bg-opacity-50 text-white p-2 text-2xl rounded-full hover:bg-orange-500" onclick="scrollLeft('maisons')">❮</button>
+            <div class="carousel flex overflow-hidden w-4/5" id="maisons"></div>
+            <button class="next absolute right-0 bg-black bg-opacity-50 text-white p-2 text-2xl rounded-full hover:bg-orange-500" onclick="scrollRight('maisons')">❯</button>
         </div>
     </section>
-
-    <section class="property-carousel">
-        <h2>Appartements</h2>
-        <div class="carousel-container">
-            <button class="prev" onclick="scrollLeft('appartements')">&#10094;</button>
-            <div class="carousel" id="appartements">
-                <div class="carousel-item">
-                    <img src="../static/assets/images/appartement1.jpg" alt="Appartement 1">
-                    <button class="btn-details">Voir Détails</button>
-                </div>
-                <div class="carousel-item">
-                    <img src="../static/assets/images/appartement2.jpg" alt="Appartement 2">
-                    <button class="btn-details">Voir Détails</button>
-                </div>
-                <div class="carousel-item">
-                    <img src="../static/assets/images/appartement3.jpg" alt="Appartement 3">
-                    <button class="btn-details">Voir Détails</button>
-                </div>
-            </div>
-            <button class="next" onclick="scrollRight('appartements')">&#10095;</button>
+    <section class="property-carousel my-16">
+        <h2 class="text-3xl font-bold text-center mb-8">Appartements</h2>
+        <div class="carousel-container relative flex items-center justify-center">
+            <button class="prev absolute left-0 bg-black bg-opacity-50 text-white p-2 text-2xl rounded-full hover:bg-orange-500" onclick="scrollLeft('appartements')">❮</button>
+            <div class="carousel flex overflow-hidden w-4/5" id="appartements"></div>
+            <button class="next absolute right-0 bg-black bg-opacity-50 text-white p-2 text-2xl rounded-full hover:bg-orange-500" onclick="scrollRight('appartements')">❯</button>
         </div>
     </section>
-
-    
-    <section class="property-carousel">
-        <h2>Villas</h2>
-        <div class="carousel-container">
-            <button class="prev" onclick="scrollLeft('villas')">&#10094;</button>
-            <div class="carousel" id="villas">
-                <div class="carousel-item">
-                    <img src="../static/assets/images/villa1.jpg" alt="Villa 1">
-                    <button class="btn-details">Voir Détails</button>
-                </div>
-                <div class="carousel-item">
-                    <img src="../static/assets/images/villa2.jpg" alt="Villa 2">
-                    <button class="btn-details">Voir Détails</button>
-                </div>
-                <div class="carousel-item">
-                    <img src="../static/assets/images/villa3.jpg" alt="Villa 3">
-                    <button class="btn-details">Voir Détails</button>
-                </div>
-            </div>
-            <button class="next" onclick="scrollRight('villas')">&#10095;</button>
+    <section class="property-carousel my-16">
+        <h2 class="text-3xl font-bold text-center mb-8">Villas</h2>
+        <div class="carousel-container relative flex items-center justify-center">
+            <button class="prev absolute left-0 bg-black bg-opacity-50 text-white p-2 text-2xl rounded-full hover:bg-orange-500" onclick="scrollLeft('villas')">❮</button>
+            <div class="carousel flex overflow-hidden w-4/5" id="villas"></div>
+            <button class="next absolute right-0 bg-black bg-opacity-50 text-white p-2 text-2xl rounded-full hover:bg-orange-500" onclick="scrollRight('villas')">❯</button>
         </div>
     </section>
-
-
-    <footer class="footer">
-        <p>&copy; 2024 AADL 2.0. Tous droits réservés.</p>
+    <footer class="bg-black text-white py-4 text-center">
+        <p>© 2024 AADL 2.0. Tous droits réservés.</p>
     </footer>
+    <script>
+        async function fetchProperties() {
+            const response = await fetch('http://localhost:8000/biens');
+            const properties = await response.json();
+            return properties;
+        }
+
+        function getRandomImage(type) {
+            const images = {
+                maison: ['maison1.jpg', 'maison2.jpg', 'maison3.jpg'],
+                appartement: ['appartement1.jpg', 'appartement2.jpg', 'appartement3.jpg'],
+                villa: ['villa1.jpg', 'villa2.jpg', 'villa3.jpg']
+            };
+            const randomIndex = Math.floor(Math.random() * images[type].length);
+            return `../static/assets/images/${images[type][randomIndex]}`;
+        }
+
+        function renderProperties(properties) {
+            const maisonsContainer = document.getElementById('maisons');
+            const appartementsContainer = document.getElementById('appartements');
+            const villasContainer = document.getElementById('villas');
+
+            properties.forEach(property => {
+                const propertyItem = document.createElement('div');
+                propertyItem.className = 'carousel-item bg-white rounded-lg shadow-lg mx-2';
+                propertyItem.innerHTML = `
+                    <img alt="Image of ${property.description}" class="w-full h-48 object-cover rounded-t-lg" src="${getRandomImage(property.type)}" />
+                    <button class="btn-details bg-orange-500 text-white py-2 w-full rounded-b-lg hover:bg-orange-600">Voir Détails</button>
+                `;
+
+                if (property.type === 'maison') {
+                    maisonsContainer.appendChild(propertyItem);
+                } else if (property.type === 'appartement') {
+                    appartementsContainer.appendChild(propertyItem);
+                } else if (property.type === 'villa') {
+                    villasContainer.appendChild(propertyItem);
+                }
+            });
+        }
+
+        function scrollLeft(id) {
+            document.getElementById(id).scrollBy({ left: -300, behavior: 'smooth' });
+        }
+
+        function scrollRight(id) {
+            document.getElementById(id).scrollBy({ left: 300, behavior: 'smooth' });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const properties = await fetchProperties();
+            renderProperties(properties);
+        });
+    </script>
 </body>
 </html>

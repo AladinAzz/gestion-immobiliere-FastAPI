@@ -1,0 +1,58 @@
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../static/pic.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Propriétés à Vendre</title>
+</head>
+<body class="bg-gray-100" style="background-image: url('../static/square-front-modern-office-buildings.jpg');background-size: cover;">
+    <header class="bg-black shadow">
+        <nav class="container mx-auto p-4 flex justify-between items-center">
+            <div class="logo">
+                <a href="accueil.html"><img src="../static/pic.png" alt="Logo de AADL 2.0" class="h-10"></a>
+            </div>
+            <ul class="flex space-x-4">
+                <li><a href="/" class="text-white hover:text-blue-500">Accueil</a></li>
+                <li><a href="/list" class="text-white hover:text-blue-500">Nos Propriétés</a></li>
+                <li><a href="/log" class="text-white hover:text-blue-500">Déconnexion</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4" style="min-height: 600px;">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold mb-4">Votre Biens</h2>
+            <ul class="w-full">
+                <li class="flex justify-between bg-gray-200 p-2 rounded-t-lg">
+                    <div class="w-1/12">Id vente</div>
+                    <div class="w-1/12">id Bien</div>
+                    <div class="w-3/12">Adress</div>
+                    <div class="w-2/12">agent</div>
+                    <div class="w-2/12">date vente</div> 
+                    <div class="w-1/12">prix</div>
+                    <div class="w-2/12">montant payé</div>
+                </li>
+                {% for prop in propbien %}
+                <li class="flex justify-between bg-white p-2 border-b">
+                    <div class="w-1/12">{{ prop.id_vente }}</div>
+                    <div class="w-1/12">{{ prop.id_bien }}</div>
+                    <div class="w-3/12">{{ prop.adress }}</div>
+                    <div class="w-2/12"><a href="#" class="text-blue-500">{{ prop.id_agent }}</a></div>
+                    <div class="w-2/12">{{ prop.date_vente }}</div>
+                    <div class="w-1/12">{{ prop.prix }}</div>
+                    <div class="w-2/12">{{ prop.montant_paye }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </main>
+
+    <footer class="bg-black shadow mt-4">
+        <div class="container mx-auto p-4 text-center">
+            <p class="text-white">© 2024 AADL 2.0. Tous droits réservés.</p>
+        </div>
+    </footer>
+</body>
+</html>

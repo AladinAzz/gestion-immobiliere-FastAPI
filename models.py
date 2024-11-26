@@ -5,14 +5,15 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # Database connection URL - Replace with your MySQL credentials
-DATABASE_URL = "mysql+pymysql://user:password@localhost/dbname"
+DATABASE_URL = "mysql+pymysql://admin:admin@localhost:3306/gestion_immobiliere"
 
 # Create an engine to the MySQL database
 engine = create_engine(DATABASE_URL, echo=True)
 
 # Create a base class for the database models
-from sqlalchemy import create_engine, Column, Integer, String, Date, Text, Decimal, Enum, ForeignKey, DateTime, TIMESTAMP
+from sqlalchemy import create_engine, Column, Integer, String, Date, Text, DECIMAL, Enum, ForeignKey, DateTime, TIMESTAMP
 from sqlalchemy.orm import relationship
+
 from sqlalchemy.ext.declarative import declarative_base
 import enum
 
@@ -88,6 +89,8 @@ class Agent(Base):
     utilisateur = relationship("Utilisateur", back_populates="agent")
     offres = relationship("Offre", back_populates="agent")
     rapports = relationship("Rapport", back_populates="agent")
+    biens = relationship("Bien", back_populates="agent")
+    ventes = relationship('Vente', back_populates='agent')
 
 # Locataire class for 'locataire' table
 class Locataire(Base):
@@ -113,6 +116,7 @@ class Proprietaire(Base):
     utilisateur = relationship("Utilisateur", back_populates="proprietaire")
     biens = relationship("Bien", back_populates="proprietaire")
     rapports_financiers = relationship("RapportFinancier", back_populates="proprietaire")
+    ventes = relationship('Vente', back_populates='proprietaire')
 
 # Bien class for 'bien' table (already defined in previous response)
 # Ensure it also includes relationships for 'proprietaire' and 'agent'
@@ -131,6 +135,9 @@ class Bien(Base):
     # Relationships
     proprietaire = relationship("Proprietaire", back_populates="biens")
     agent = relationship("Agent", back_populates="biens")
+    location = relationship('Location', back_populates='bien')
+    offres = relationship('Offre', back_populates='bien')
+    ventes = relationship('Vente', back_populates='bien')
 
 # Location class for 'location' table
 class Location(Base):
@@ -146,9 +153,11 @@ class Location(Base):
     payment = Column(Integer, default=0)
     
     # Relationships
-    bien = relationship("Bien", back_populates="locations")
+    bien = relationship("Bien", back_populates="location")
     locataire = relationship("Locataire", back_populates="locations")
     paiements_loyer = relationship("PaiementLoyer", back_populates="location")
+    demandes_maintenance = relationship('DemandeMaintenance', back_populates='location')
+    transactions = relationship('Transaction', back_populates='location')
 
 # Offre class for 'offre' table
 class Offre(Base):
@@ -157,7 +166,7 @@ class Offre(Base):
     id_offre = Column(Integer, primary_key=True, autoincrement=True)
     id_agent = Column(Integer, ForeignKey('agent.id_agent'), default=None)
     id_bien = Column(Integer, ForeignKey('bien.id_bien'), default=None)
-    montant = Column(Decimal(10, 2), default=None)
+    montant = Column(DECIMAL(10, 2), default=None)
     date_debut = Column(Date, default=None)
     date_fin = Column(Date, default=None)
     type = Column(Enum(TypeEnum), nullable=False)
@@ -174,7 +183,7 @@ class PaiementLoyer(Base):
     id_paiement = Column(Integer, primary_key=True, autoincrement=True)
     id_locataire = Column(Integer, ForeignKey('locataire.id_locataire'), default=None)
     id_location = Column(Integer, ForeignKey('location.id_location'), default=None)
-    montant = Column(Decimal(10, 2), default=None)
+    montant = Column(DECIMAL(10, 2), default=None)
     date_paiement = Column(Date, default=None)
     
     # Relationships
@@ -215,7 +224,7 @@ class RapportFinancier(Base):
     id_rapport_financier = Column(Integer, primary_key=True, autoincrement=True)
     id_proprietaire = Column(Integer, ForeignKey('proprietaire.id_proprietaire'), default=None)
     id_transaction = Column(Integer, ForeignKey('transaction.id_transaction'), default=None)
-    montant = Column(Decimal(10, 2), default=None)
+    montant = Column(DECIMAL(10, 2), default=None)
     date_rapport = Column(Date, default=None)
     
     # Relationships
@@ -227,7 +236,7 @@ class Transaction(Base):
     __tablename__ = 'transaction'
     
     id_transaction = Column(Integer, primary_key=True, autoincrement=True)
-    montant = Column(Decimal(10, 2), default=None)
+    montant = Column(DECIMAL(10, 2), default=None)
     date_transaction = Column(TIMESTAMP, default=None)
     id_vente = Column(Integer, ForeignKey('vente.id_vente'), default=None)
     id_location = Column(Integer, ForeignKey('location.id_location'), default=None)
@@ -246,9 +255,9 @@ class Vente(Base):
     id_agent = Column(Integer, ForeignKey('agent.id_agent'), default=None)
     id_proprietaire = Column(Integer, ForeignKey('proprietaire.id_proprietaire'), default=None)
     date_vente = Column(Date, default=None)
-    montant_paye = Column(Decimal(10, 2), default=None)
+    montant_paye = Column(DECIMAL(10, 2), default=None)
     etat = Column(Enum(EtatEnum), default="non_payée", nullable=False)
-    prix = Column(Decimal(10, 2), default=None)
+    prix = Column(DECIMAL(10, 2), default=None)
     
     # Relationships
     agent = relationship("Agent", back_populates="ventes")
