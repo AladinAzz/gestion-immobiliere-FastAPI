@@ -26,7 +26,7 @@ class EtatEnum(str, enum.Enum):
     dispo = "dispo"
     retard = "retard"
     payee = "payée"
-    non_payee = "non_payée"
+    non_payée = "non_payée"
     annuler = "annuler"
     termine = "terminé"
     actif = "actif"

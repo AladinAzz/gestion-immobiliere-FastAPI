@@ -5,9 +5,9 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from typing import List
-from models import Bien, Offre  # Ensure Bien and Offre are correctly imported
+from models import *  # Ensure Bien and Offre are correctly imported
 from database import get_db
-
+from schemas import *  
 app = FastAPI()
 
 # Mount the static directory to serve static files (CSS, images, etc.)
@@ -24,79 +24,14 @@ async def read_root(request: Request):
 async def read_list(request: Request):
     return templates.TemplateResponse("list.html", {"request": request, "title": "Nos Propriétés"})
 
-#for the bien
-from pydantic import BaseModel
-from typing import Optional
-from enum import Enum
-from decimal import Decimal
 
-# Enum classes for EtatEnum and TypeEnum if not already defined
-class RoleEnum(str, Enum):
-    agent = "agent"
-    proprietaire = "proprietaire"
-    locataire = "locataire"
-    admin = "admin"
-    visit = "visit"
-
-class EtatEnum(str, Enum):
-    loue = "loue"
-    vendu = "vendu"
-    dispo = "dispo"
-    retard = "retard"
-    payee = "payée"
-    non_payee = "non_payée"
-    annuler = "annuler"
-    termine = "terminé"
-    actif = "actif"
-    expire = "expire"
-
-class TypeEnum(str, Enum):
-    villa = "villa"
-    maison = "maison"
-    appartement = "appartement"
-    bureau = "bureau"
-    location = "location"
-    vente = "vente"
-
-class ProprietaireBase(BaseModel):
-    id_proprietaire: int
-    # Add other fields as necessary
-
-    class Config:
-        orm_mode = True
-
-class AgentBase(BaseModel):
-    id_agent: int
-    # Add other fields as necessary
-
-    class Config:
-        orm_mode = True
-
-class BienBase(BaseModel):
-    adresse: Optional[str] = None
-    superficie: Optional[int] = None
-    etat: Optional[EtatEnum] = None
-    type: Optional[TypeEnum] = None
-    ville: Optional[str] = None
-    id_proprietaire: Optional[int] = None
-    id_agent: Optional[int] = None
-
-    # Including related models as nested Pydantic models
-    proprietaire: Optional[ProprietaireBase] = None
-    agent: Optional[AgentBase] = None
-
-    class Config:
-        orm_mode = True  # Tells Pydantic to read from ORM models
-
-# Response model with the ID included
-class BienResponse(BienBase):
-    id_bien: int
-
-    class Config:
-        orm_mode = True
-
-
-
+@app.get("/get_bien/{id_bien}")
+async def get_bien(id_bien: int,db: Session = Depends(get_db)):
+    property_details = db.query(Bien).filter(Bien.id_bien == id_bien).all()
+    
+    if not property_details:
+        raise HTTPException(status_code=404, detail="Property not found")
+    return property_details
 
 
 @app.get("/biens", response_model=List[BienResponse])
@@ -111,7 +46,32 @@ def get_available_biens(db: Session = Depends(get_db)):
 
 
 
-@app.get("/prop", response_class=HTMLResponse)
-async def read_list(request: Request):
-    return templates.TemplateResponse("prop.html", {"request": request, "title": "Mes Propriétés","propbien":[]})
+@app.get("/prop/{id_prop}")
+async def get_bien(request: Request,id_prop: int, db: Session = Depends(get_db) ):
+    # Fetch the details of the property using the provided id
+    vente_details = db.query(Vente).filter(Vente.id_proprietaire == id_prop).all()
+    
+    # If no data found, return 404
+    if not vente_details:
+        raise HTTPException(status_code=404, detail="Property not found")
+    
+     # Fetch and associate the address for each Vente entry
+    for vente in vente_details:
+        # Fetch the address associated with the Bien linked to this Vente
+        bien = db.query(Bien).filter(Bien.id_bien == vente.id_bien).first()
+        if bien:
+            vente.adresse = bien.adresse  # Add the address to the vente object
+    
+    # Pass the vente_details to the read_list function along with the request
+    return await read_list(request, vente_details)
+
+async def read_list(request: Request, vente_details: List[VenteResponse]):
+    # Render the HTML template and pass the vente_details as 'propbien'
+    return templates.TemplateResponse("prop.html", {"request": request, "title": "Mes Propriétés", "propbien": vente_details})
+
+
+
+
+
+
 
