@@ -37,7 +37,7 @@
                 {% for prop in propbien %}
                 <li class="flex justify-between bg-white p-2 border-b">
                     <div class="w-1/12">{{ prop.id_vente }}</div>
-                    <div class="w-1/12"><a href="#" onclick="fetchBienDetails( {{ prop.id_bien }} ); return false;" >{{ prop.id_bien }}</a></div>
+                    <div class="w-1/12"><a href="#" onclick="fetchBienDetails( {{ prop.id_bien }} );/*don't correct this*/ return false;" >{{ prop.id_bien }}</a></div>
                     <div class="w-3/12">{{ prop.adresse }}</div>
                     <div class="w-2/12">{{ prop.id_agent }}</div>
                     <div class="w-2/12">{{ prop.date_vente }}</div>

@@ -65,7 +65,7 @@
     </footer>
     <script>
         async function fetchProperties() {
-            const response = await fetch('http://localhost:8000/biens');
+            const response = await fetch('/biens');
             const properties = await response.json();
             return properties;
         }
