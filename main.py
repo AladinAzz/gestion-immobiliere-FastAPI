@@ -8,8 +8,11 @@ from typing import List
 from models import *  # Ensure Bien and Offre are correctly imported
 from database import get_db
 from schemas import *  
+from routes import user
 app = FastAPI()
 
+
+app.include_router(user.router)
 # Mount the static directory to serve static files (CSS, images, etc.)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -70,8 +73,11 @@ async def read_list(request: Request, vente_details: List[VenteResponse]):
     return templates.TemplateResponse("prop.html", {"request": request, "title": "Mes Propriétés", "propbien": vente_details})
 
 
+@app.get("/users/login", response_class=HTMLResponse)
+async def read_list(request: Request):
+    return templates.TemplateResponse("log.html", {"request": request, "title": "Log In"}) 
 
 
-
+#hi
 
 
