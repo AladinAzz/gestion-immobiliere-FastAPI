@@ -49,9 +49,16 @@ class UtilisateurBase(BaseModel):
     class Config:
         orm_mode = True
 
-
-class UtilisateurCreate(UtilisateurBase):
+class UtilisateurCreate(BaseModel):
+    nom: str
+    prenom: str
+    email: str
+    telephone: str
     mot_de_passe: str
+    role: Optional[str] = "visit"
+    date_creation: Optional[str] ="10-10-2020"
+
+
 
 
 class UtilisateurResponse(UtilisateurBase):

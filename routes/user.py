@@ -1,11 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Form
 from sqlalchemy.orm import Session
 from schemas import UtilisateurCreate, UtilisateurResponse
 from models import Utilisateur
-from database import get_db
+from database import *
 from security import *
 from jose import jwt
 from starlette.responses import RedirectResponse
+from urllib.parse import parse_qs
+
 router = APIRouter(prefix="/users", tags=["Users"])
 
 # Utility function to extract the current user from the JWT token
@@ -23,24 +25,38 @@ def get_current_user_from_token(token: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid token")
 
 # Route to register a new user
-@router.post("/register", response_model=UtilisateurResponse, status_code=status.HTTP_201_CREATED)
-def register_user(user: UtilisateurCreate, db: Session = Depends(get_db)):
-    # Check if the email already exists
-    existing_user = db.query(Utilisateur).filter(Utilisateur.email == user.email).first()
+@router.post("/register")
+def register_user(
+    nom: str = Form(...),
+    prenom: str = Form(...),
+    email: str = Form(...),
+    telephone: str = Form(...),
+    mot_de_passe: str = Form(...),
+    role: str = Form("visit"),  # Default value
+    date_creation: str = Form("2021-10-10"),  # Default value
+    db: SessionLocal = Depends(get_db)):
+   # Create a new user
+       # Check if the email already exists
+    existing_user = db.query(Utilisateur).filter(Utilisateur.email == email).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    # Hash the user's password
-    hashed_password = hash_password(user.mot_de_passe)
-    user_data = Utilisateur(**user.dict())
-    user_data.mot_de_passe = hashed_password
-    user_data.date_creation=None
-    # Save the user to the database
-    db.add(user_data)
-    db.commit()
-    db.refresh(user_data)
-    return user_data
+    # Create a new user in the database
+    new_user = Utilisateur(
+        nom=nom,
+        prenom=prenom,
+        email=email,
+        telephone=telephone,
+        mot_de_passe=mot_de_passe,
+        role=role,
+        date_creation=date_creation,
+    )
 
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return {"message": "User registered successfully", "user_id": new_user.id}
 # Route to log in a user
 @router.post("/login")
 def login(email: str, password: str, db: Session = Depends(get_db)):
@@ -62,5 +78,10 @@ def login(email: str, password: str, db: Session = Depends(get_db)):
 @router.get("/me", response_model=UtilisateurResponse)
 def get_current_user(current_user: Utilisateur = Depends(get_current_user_from_token)):
     return current_user
+
+
+
+
+
 
 

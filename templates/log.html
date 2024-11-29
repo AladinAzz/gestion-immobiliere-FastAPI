@@ -323,15 +323,33 @@
     <div class="container" id="container">
         <!-- Sign-Up Form -->
         <div class="form-container sign-up-container">
-            <form action="/register" method="POST">
+            <form action="/users/register" method="POST">
                 <h1>Create Account</h1>
                 <span>Use your email for registration</span>
-                <input name="nom" placeholder="First Name" required="" type="text"/>
-                <input name="prenom" placeholder="Last Name" required="" type="text"/>
-                <input name="email" placeholder="Email" required="" type="email"/>
-                <input name="phone" placeholder="Phone number" required="" type="text"/>
-                <input name="password" placeholder="Password" required="" type="password"/>
-                <button id="sub" name="butt" type="submit">Sign Up</button>
+            
+                <!-- First Name -->
+                <input name="nom" placeholder="First Name" required="" type="text" />
+            
+                <!-- Last Name -->
+                <input name="prenom" placeholder="Last Name" required="" type="text" />
+            
+                <!-- Email -->
+                <input name="email" placeholder="Email" required="" type="email" />
+            
+                <!-- Phone Number -->
+                <input name="telephone" placeholder="Phone number" required="" type="tel" pattern="[0-9]+" title="Enter only numbers" />
+            
+                <!-- Password -->
+                <input name="mot_de_passe" placeholder="Password" required="" type="password" minlength="6" />
+            
+                <!-- Role (Hidden) -->
+                <input name="role" value="visit" type="hidden" />
+            
+                <!-- Date Creation (Hidden) -->
+                <input name="date_creation" value="10-10-2021" type="hidden" />
+            
+                <!-- Submit Button -->
+                <button type="submit">Sign Up</button>
             </form>
         </div>
         <!-- Sign-In Form -->
