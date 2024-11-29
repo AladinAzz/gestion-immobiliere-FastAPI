@@ -6,7 +6,7 @@ from fastapi import HTTPException, status, Depends
 
 
 
-SECRET_KEY = "your_secret_key"  # Use a strong, random key for production
+SECRET_KEY = "BDD_Project"  # Use a strong, random key for production
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

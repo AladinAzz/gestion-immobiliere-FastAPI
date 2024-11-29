@@ -5,7 +5,7 @@ from models import Utilisateur
 from database import get_db
 from security import *
 from jose import jwt
-
+from starlette.responses import RedirectResponse
 router = APIRouter(prefix="/users", tags=["Users"])
 
 # Utility function to extract the current user from the JWT token
@@ -34,7 +34,7 @@ def register_user(user: UtilisateurCreate, db: Session = Depends(get_db)):
     hashed_password = hash_password(user.mot_de_passe)
     user_data = Utilisateur(**user.dict())
     user_data.mot_de_passe = hashed_password
-
+    user_data.date_creation=None
     # Save the user to the database
     db.add(user_data)
     db.commit()
@@ -52,7 +52,11 @@ def login(email: str, password: str, db: Session = Depends(get_db)):
     # Create a JWT token
     token_data = {"user_id": user.id_utilisateur, "email": user.email, "role": user.role}
     token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
-    return {"access_token": token, "token_type": "bearer"}
+    
+    return {"token": token,"tokenType": "bearer"}
+
+ 
+
 
 # Route to get the current user's information
 @router.get("/me", response_model=UtilisateurResponse)
