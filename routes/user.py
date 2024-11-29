@@ -34,7 +34,7 @@ def register_user(
     mot_de_passe: str = Form(...),
     role: str = Form("visit"),  # Default value
     date_creation: str = Form("2021-10-10"),  # Default value
-    db: SessionLocal = Depends(get_db)):
+    db: Session = Depends(get_db)):
    # Create a new user
        # Check if the email already exists
     existing_user = db.query(Utilisateur).filter(Utilisateur.email == email).first()
@@ -59,14 +59,25 @@ def register_user(
     return {"message": "User registered successfully", "user_id": new_user.id}
 # Route to log in a user
 @router.post("/login")
-def login(email: str, password: str, db: Session = Depends(get_db)):
-    # Find the user by email
+def login_user(
+    email: str = Form(...),
+    mot_de_passe: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    # Get user by email
     user = db.query(Utilisateur).filter(Utilisateur.email == email).first()
-    if not user or not verify_password(password, user.mot_de_passe):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid email or password")
+
+    # Verify the password
+    if not verify_password(mot_de_passe, user.mot_de_passe):
+        raise HTTPException(status_code=400, detail="Invalid email or password")
+
+    # Successful login
     
+
     # Create a JWT token
-    token_data = {"user_id": user.id_utilisateur, "email": user.email, "role": user.role}
+    token_data = {"user_id": user.id_utilisateur,  "role": user.role}
     token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
     
     return {"token": token,"tokenType": "bearer"}
