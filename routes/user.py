@@ -56,7 +56,7 @@ def login(email: str, password: str, db: Session = Depends(get_db)):
     return {"token": token,"tokenType": "bearer"}
 
  
-
+ 
 
 # Route to get the current user's information
 @router.get("/me", response_model=UtilisateurResponse)

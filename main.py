@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from typing import List
-from models import *  # Ensure Bien and Offre are correctly imported
+from models import *  
 from database import get_db
 from schemas import *  
 from routes import user
