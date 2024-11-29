@@ -1,0 +1,98 @@
+<html lang="fr"></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../static/pic.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Ajouter une Vente</title>
+</head>
+<body class="bg-gray-100">
+    <header class="bg-black shadow">
+        <nav class="container mx-auto p-4 flex justify-between items-center">
+            <div class="logo">
+                <a href="/"><img src="../static/pic.png" alt="Logo de AADL 2.0" class="h-10"></a>
+            </div>
+            <ul class="flex space-x-4">
+                <li><a href="/" class="text-white hover:text-blue-500">Accueil</a></li>
+                <li><a href="/list" class="text-white hover:text-blue-500">Nos Propriétés</a></li>
+                <li><a href="/login" class="text-white hover:text-blue-500">Déconnexion</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4">
+        <div class="bg-white p-6 rounded-lg shadow-lg"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="bg-blue-500 text-white p-4 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-bold mb-2">Accès Utilisateurs</h3>
+                    <a href="/users" class="mt-2 inline-block bg-white text-blue-500 px-4 py-2 rounded hover:bg-gray-200">Voir les Utilisateurs</a>
+                </div>
+                <div class="bg-green-500 text-white p-4 rounded-lg shadow-lg" style="background-color: black;">
+                    <h3 class="text-xl font-bold mb-2">Ajouter une Vente</h3>
+                    <a href="/add-sale" class="mt-2 inline-block bg-white text-green-500 px-4 py-2 rounded hover:bg-gray-200">Ajouter une Vente</a>
+                </div>
+                <div class="bg-yellow-500 text-white p-4 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-bold mb-2">Liste des Offres</h3>
+                    <a href="/offers" class="mt-2 inline-block bg-white text-yellow-500 px-4 py-2 rounded hover:bg-gray-200">Voir les Offres</a>
+                </div>
+                <div class="bg-red-500 text-white p-4 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-bold mb-2">Liste des Locations</h3>
+                    <a href="/rentals" class="mt-2 inline-block bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-200">Voir les Locations</a>
+                </div>
+                <div class="bg-purple-500 text-white p-4 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-bold mb-2">Transactions</h3>
+                    <a href="/transactions" class="mt-2 inline-block bg-white text-purple-500 px-4 py-2 rounded hover:bg-gray-200">Voir les Transactions</a>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold mb-4">Ajouter une Vente</h2>
+            <form action="/add-sale" method="POST" class="space-y-4">
+                <div>
+                    <label for="id_bien" class="block text-sm font-medium text-gray-700">ID Bien</label>
+                    <input type="number" name="id_bien" id="id_bien" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="id_agent" class="block text-sm font-medium text-gray-700">ID Agent</label>
+                    <input type="number" name="id_agent" id="id_agent" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="id_proprietaire" class="block text-sm font-medium text-gray-700">ID Propriétaire</label>
+                    <input type="number" name="id_proprietaire" id="id_proprietaire" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="date_vente" class="block text-sm font-medium text-gray-700">Date de Vente</label>
+                    <input type="date" name="date_vente" id="date_vente" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="prix" class="block text-sm font-medium text-gray-700">Prix</label>
+                    <input type="number" step="0.01" name="prix" id="prix" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="montant_paye" class="block text-sm font-medium text-gray-700">Montant Payé</label>
+                    <input type="number" step="0.01" name="montant_paye" id="montant_paye" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="etat" class="block text-sm font-medium text-gray-700">État</label>
+                    <select name="etat" id="etat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                        <option value="non_payée">Non Payée</option>
+                        <option value="payée">Payée</option>
+                        <option value="annuler">Annulée</option>
+                        <option value="terminé">Terminée</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Ajouter la Vente</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="bg-black shadow mt-4">
+        <div class="container mx-auto p-4 text-center">
+            <p class="text-white">© 2024 AADL 2.0. Tous droits réservés.</p>
+        </div>
+    </footer>
+</body>
+</html>

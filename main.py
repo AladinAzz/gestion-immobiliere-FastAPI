@@ -29,6 +29,10 @@ async def read_root(request: Request):
 async def read_list(request: Request):
     return templates.TemplateResponse("list.html", {"request": request, "title": "Nos Propriétés"})
 
+@app.get("/agent", response_class=HTMLResponse)
+async def read_list(request: Request):
+    return templates.TemplateResponse("agent.html", {"request": request, "title": "Nos Propriétés"})
+
 
 @app.get("/get_bien/{id_bien}")
 async def get_bien(id_bien: int,db: Session = Depends(get_db)):
@@ -95,9 +99,9 @@ async def get_bien(request: Request,id_user: int, db: Session = Depends(get_db) 
             vente.adresse = bien.adresse  # Add the address to the vente object
     
     # Pass the vente_details to the read_list function along with the request
-    return await read_listt(request, vente_details)
+    return await read_list2(request, vente_details)
 
-async def read_listt(request: Request, vente_details: List[VenteResponse]):
+async def read_list2(request: Request, vente_details: List[VenteResponse]):
     # Render the HTML template and pass the vente_details as 'propbien'
     return templates.TemplateResponse("agent.html", {"request": request, "title": "Agent Space", "propbien": vente_details})
 
@@ -105,7 +109,7 @@ async def read_listt(request: Request, vente_details: List[VenteResponse]):
 
 
 
-@app.get("/users/login", response_class=HTMLResponse)
+@app.get("/login", response_class=HTMLResponse)
 async def read_list(request: Request):
     return templates.TemplateResponse("log.html", {"request": request, "title": "Log In"}) 
 
