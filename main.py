@@ -15,7 +15,7 @@ from starlette.responses import RedirectResponse
 import logging
 from fastapi.responses import JSONResponse
 import httpx
-
+from fastapi.routing import APIRoute
 
 
 app = FastAPI()
@@ -144,9 +144,10 @@ async def redirect(request: Request, token: str = Form(...)):
         case "visit":
             return RedirectResponse(url="/")
         case "proprietaire":
+            link=f"{base_url}/prop/{token_data['user_id']}"
             async with httpx.AsyncClient() as client:
                 # Construct the full URL for the GET request
-                response = await client.get(f"{base_url}/prop/{token_data['user_id']}")
+                response = await client.get(link)
                 
                 # Log the response status code and content
                 logger.info(f"Response status code: {response.status_code}")
@@ -164,4 +165,15 @@ async def redirect(request: Request, token: str = Form(...)):
         case _:
             raise HTTPException(status_code=400, detail="Unknown role")
         
+def list_routes(app: FastAPI):
+    routers = {}
+    for route in app.routes:
+        if isinstance(route, APIRoute):
+            router_name = route.tags[0] if route.tags else "default"
+            routers.setdefault(router_name, []).append(route.path)
+    return routers
 
+
+@app.get("/r")
+async def read_routes():
+    return list_routes(app)

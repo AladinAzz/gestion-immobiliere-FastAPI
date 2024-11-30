@@ -9,6 +9,9 @@ from jose import jwt
 
 
 db = APIRouter(prefix="/db", tags=["db"])
+@db.get("/")
+def get_db_status():
+    return {"status": "Database is healthy"}
 
 def get_bien(id_bien: int,db: Session = Depends(get_db)):
         property_details = db.query(Bien).filter(Bien.id_bien == id_bien).all()
@@ -38,21 +41,21 @@ def get_agent_by_id(id_agent: int):
 
 
 
-db.get("/get-users")
+@db.get("/get-users")
 def get_users(db: Session = Depends(get_db)):
         users = db.query(Utilisateur).filter(Utilisateur.role!="admin" and Utilisateur.role!="agent").all()
         if not users:
             raise HTTPException(status_code=404, detail="users not found")
         return users
 
-db.get("/get-offers")
+@db.get("/get-offers")
 def get_offers(db: Session = Depends(get_db)):
       offers = db.query(Offre).all()
       if not offers:
             raise HTTPException(status_code=404, detail="offers not found")
       return offers
 
-db.get("/get-rentals")
+@db.get("/get-rentals")
 def get_rentals(db: Session = Depends(get_db)):
       rentals = db.query(Location).all()
       if not rentals:
@@ -60,14 +63,26 @@ def get_rentals(db: Session = Depends(get_db)):
       return rentals
 
 
-db.get("/get-rentals-by-agent/{agent_id}")
+@db.get("/get-rentals-by-agent/{agent_id}", response_model=List[LocationResponse])
 def get_rentals_by_agent(agent_id: int, db: Session = Depends(get_db)):
-      rentals = db.query(Location).filter(Location.id_agent == agent_id).all()
-      if not rentals:
-            raise HTTPException(status_code=404, detail="rentals not found")
-      return rentals
+    # Fetch all 'Bien' entries for the agent
+    biens = db.query(Bien).filter(Bien.id_agent == agent_id).all()
+    if not biens:
+        raise HTTPException(status_code=404, detail="Bien not found")
 
-db.get("/get-sales")
+    # Fetch all rentals for the agent's properties
+    rentals = []
+    for bien in biens:
+        locations = db.query(Location).filter(Location.id_bien == bien.id_bien).all()
+        if locations:
+            rentals.extend(locations)
+    
+    if not rentals:
+        raise HTTPException(status_code=404, detail="Rentals not found")
+    
+    # Optionally convert to LocationResponse schema
+    return rentals
+@db.get("/get-sales")
 def get_sales(db: Session = Depends(get_db)):
       sales = db.query(Vente).all()
       if not sales:
@@ -75,7 +90,7 @@ def get_sales(db: Session = Depends(get_db)):
       return sales
 
 
-db.get("/get-sales-by-agent")
+@db.get("/get-sales-by-agent")
 def get_sales_by_agent(agent_id: int, db: Session = Depends(get_db)):
       sales = db.query(Vente).filter(Vente.id_agent == agent_id).all()
       if not sales:
@@ -83,14 +98,14 @@ def get_sales_by_agent(agent_id: int, db: Session = Depends(get_db)):
       return sales
 
 
-db.get("/get-transactions")
+@db.get("/get-transactions")
 def get_transactions(db: Session = Depends(get_db)):
       transactions = db.query(Transaction).all()
       if not transactions:
             raise HTTPException(status_code=404, detail="transactions not found")
       return transactions
 
-db.get("/get-transaction-by-agent")
+@db.get("/get-transaction-by-agent")
 def get_transaction_by_agent(agent_id: int, db: Session = Depends(get_db)):
     transactions = db.query(Transaction).join(Vente, Vente.id_vente == Transaction.id_vente).filter(Transaction.id_agent == agent_id).union(
         db.query(Transaction).join(Location, Location.id_location == Transaction.id_location).filter(Transaction.id_agent == agent_id)
