@@ -1,20 +1,29 @@
 # main.py
-from fastapi import FastAPI, Request, Depends, HTTPException
+from fastapi import FastAPI, Request, Depends, HTTPException,Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from typing import List
+import crud
 from models import *  
 from database import get_db
 from schemas import *  
 from routes import user
 from security import *
 from starlette.responses import RedirectResponse
+import logging
+from fastapi.responses import JSONResponse
+import httpx
+
+
+
 app = FastAPI()
 
 
+
 app.include_router(user.router)
+app.include_router(crud.db)
 # Mount the static directory to serve static files (CSS, images, etc.)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -113,23 +122,46 @@ async def read_list2(request: Request, vente_details: List[VenteResponse]):
 async def read_list(request: Request):
     return templates.TemplateResponse("log.html", {"request": request, "title": "Log In"}) 
 
+
+
+logger = logging.getLogger(__name__)
+
+
 @app.post("/redirect")
-def redirect(token:str):
-    token_data=decode_access_token(token)
+async def redirect(request: Request, token: str = Form(...)):
+    logger.info(f"Received request with token: {token}")
+    
+    # Decode the token
+    token_data = decode_access_token(token)
+    
+    # Get the base URL from the request
+    base_url = f"http://{request.client.host}:{request.client.port}"  # Adjust for https if needed
+    
+    # Check the role and handle redirection or fetching data
     match token_data.get("role"):
         case "admin":
             return RedirectResponse(url="/admin")
         case "visit":
             return RedirectResponse(url="/")
         case "proprietaire":
-            return RedirectResponse(url=f"/prop/{token_data['user_id']}")
+            async with httpx.AsyncClient() as client:
+                # Construct the full URL for the GET request
+                response = await client.get(f"{base_url}/prop/{token_data['user_id']}")
+                
+                # Log the response status code and content
+                logger.info(f"Response status code: {response.status_code}")
+                logger.info(f"Response content: {response.text}")
+                
+                # Check if the response is successful
+                if response.status_code == 200:
+                    return JSONResponse(content=response.json(), status_code=response.status_code)
+                else:
+                    raise HTTPException(status_code=response.status_code, detail="Error fetching property data")
         case "locataire":
             return RedirectResponse(url=f"/loc/{token_data['user_id']}")
         case "agent":   
             return RedirectResponse(url=f"/agent/{token_data['user_id']}")
         case _:
             raise HTTPException(status_code=400, detail="Unknown role")
-        
-
         
 

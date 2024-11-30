@@ -354,13 +354,13 @@
         </div>
         <!-- Sign-In Form -->
         <div class="form-container sign-in-container">
-            <form action="/users/login" method="POST">
+            <form action="#" method="POST">
                 <h1>Sign in</h1>
                 <span>Use your account</span>
-                <input name="email" placeholder="Email" required="" type="email"/>
-                <input name="mot_de_passe" placeholder="Password" required="" type="password"/>
+                <input name="email" id="email" placeholder="Email" required="" type="email"/>
+                <input name="mot_de_passe" id="pass" placeholder="Password" required="" type="password"/>
                 <a href="#">Forgot your password?</a>
-                <button id="sub" name="connect" type="submit">Sign In</button>
+                <button id="sub" name="connect" type="submit" onclick="login(event)">Sign In</button>
             </form>
         </div>
         <!-- Overlay Panels -->
@@ -379,18 +379,71 @@
             </div>
         </div>
     </div>
-    <script>
+    <script type="module">
+        
+       
+
+        import { postRedirect, getToken, saveToken } from '../static/token_manip.js';
+      
         const signUpButton = document.getElementById('signUp');
         const signInButton = document.getElementById('signIn');
         const container = document.getElementById('container');
-
+      
         signUpButton.addEventListener('click', () => {
-            container.classList.add("right-panel-active");
+          container.classList.add("right-panel-active");
+        });
+      
+        signInButton.addEventListener('click', () => {
+          container.classList.remove("right-panel-active");
+        });
+      
+
+        const myButton = document.getElementById("sub");
+myButton.addEventListener("click", async (event) => {
+    event.preventDefault(); // Prevent default form submission
+
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("pass").value;
+
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('mot_de_passe', password);
+
+    const response = await fetch('/users/login', {
+        method: 'POST',
+        body: formData,
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        saveToken(data.token); // Assuming this function saves the token
+        alert('Login successful!');
+
+        // Prepare to redirect
+        let formDataa = new FormData();
+        formDataa.append('token', getToken()); // Ensure this returns a valid token
+
+        // Log the token being sent
+        console.log("Token being sent:", getToken());
+
+        // Redirect
+        const redirectResponse = await fetch('/redirect', {
+            method: 'POST',
+            body: formDataa,
         });
 
-        signInButton.addEventListener('click', () => {
-            container.classList.remove("right-panel-active");
-        });
-    </script>
+        if (redirectResponse.ok) {
+            // Handle successful redirect
+            console.log("Redirect successful");
+        } else {
+            console.error('Redirect failed:', redirectResponse.status);
+        }
+    } else {
+        alert('Invalid credentials');
+    }
+});
+      </script>
+      
+
 </body>
 </html>

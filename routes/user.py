@@ -64,6 +64,7 @@ def login_user(
     mot_de_passe: str = Form(...),
     db: Session = Depends(get_db),
 ):
+    
     # Get user by email
     user = db.query(Utilisateur).filter(Utilisateur.email == email).first()
     if not user:
@@ -75,7 +76,6 @@ def login_user(
 
     # Successful login
     
-
     # Create a JWT token
     token_data = {"user_id": user.id_utilisateur,  "role": user.role}
     token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
