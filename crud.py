@@ -107,11 +107,19 @@ def get_transactions(db: Session = Depends(get_db)):
 
 @db.get("/get-transaction-by-agent")
 def get_transaction_by_agent(agent_id: int, db: Session = Depends(get_db)):
-    transactions = db.query(Transaction).join(Vente, Vente.id_vente == Transaction.id_vente).filter(Transaction.id_agent == agent_id).union(
-        db.query(Transaction).join(Location, Location.id_location == Transaction.id_location).filter(Transaction.id_agent == agent_id)
-        ).all()
-    if not transactions:
+      transactions = db.query(Transaction).join(Vente, Vente.id_vente == Transaction.id_vente).filter(Vente.id_agent == agent_id).all()
+      biens = db.query(Bien).filter(Bien.id_agent == agent_id).all()
+      if not biens:
+            raise HTTPException(status_code=404, detail="Bien not found")  
+      rentals = []
+      for bien in biens:
+        locations = db.query(Location).filter(Location.id_bien == bien.id_bien).all()
+        if locations:
+            rentals.extend(locations)
+      for rent in rentals:
+            transactions.extend(db.query(Transaction).join(Location, Location.id_location == Transaction.id_location).filter(Location.id_location == rent.id_location).all())
+      if not transactions:
           raise HTTPException(status_code=404, detail="transactions not found")
-    return transactions
+      return transactions
 
 
