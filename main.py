@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from typing import List
 import crud
+
 from models import *  
 from database import get_db
 from schemas import *  
@@ -165,15 +166,23 @@ async def redirect(request: Request, token: str = Form(...)):
         case _:
             raise HTTPException(status_code=400, detail="Unknown role")
         
-def list_routes(app: FastAPI):
-    routers = {}
-    for route in app.routes:
-        if isinstance(route, APIRoute):
-            router_name = route.tags[0] if route.tags else "default"
-            routers.setdefault(router_name, []).append(route.path)
-    return routers
 
 
-@app.get("/r")
-async def read_routes():
-    return list_routes(app)
+@app.get("/rentals", response_class=HTMLResponse)
+def get_rental(request: Request, db: Session = Depends(get_db)):
+    locations = crud.get_rentals(db)
+    return templates.TemplateResponse("liste_locations.html", {"request": request, "title": "Locations", "locations": locations})
+
+@app.get("/users", response_class=HTMLResponse)
+def get_rental(request: Request, db: Session = Depends(get_db)):
+    users = crud.get_users(db)
+    return templates.TemplateResponse("acces_utilisateurs.html", {"request": request, "title": "Locations", "users": users})
+
+
+
+@app.get("/offers", response_class=HTMLResponse)
+def get_rental(request: Request, db: Session = Depends(get_db)):
+    offres = crud.get_offers(db)
+    return templates.TemplateResponse("liste_offres.html", {"request": request, "title": "Locations", "offers": offres})
+
+

@@ -34,7 +34,7 @@ class RoleEnum(str, Enum):
     locataire = "locataire"
     admin = "admin"
     visit = "visit"
-
+    
 
 ### SCHEMAS ###
 # Utilisateur Schema

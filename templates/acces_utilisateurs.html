@@ -22,8 +22,8 @@
         </nav>
     </header>
 
-    <main class="container mx-auto p-4">
-        <div class="bg-white p-6 rounded-lg shadow-lg"></div>
+    <main class="container mx-auto p-4" style="background-image: url('../static/japanese-culture-with-moving-car.jpg');background-size: cover;">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div class="bg-blue-500 text-white p-4 rounded-lg shadow-lg" style="background-color: black;">
                     <h3 class="text-xl font-bold mb-2">Accès Utilisateurs</h3>
@@ -72,7 +72,7 @@
                         <td class="py-2 px-4 border-b">{{ user.prenom }}</td>
                         <td class="py-2 px-4 border-b">{{ user.email }}</td>
                         <td class="py-2 px-4 border-b">{{ user.telephone }}</td>
-                        <td class="py-2 px-4 border-b">{{ user.role }}</td>
+                        <td class="py-2 px-4 border-b">{{ user.role.name }}</td>
                         <td class="py-2 px-4 border-b">
                             <button class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">Modifier</button>
                             <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Supprimer</button>
