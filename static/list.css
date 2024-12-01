@@ -255,4 +255,10 @@ nav.navbar .logo img {
         border-top-left-radius: 10px;
         border-top-right-radius: 10px;
     }
-
+    .carousel {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+    }
+    

@@ -15,6 +15,13 @@
         .carousel-item:hover img {
             transform: scale(1.1);
         }
+        .carousel {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+    }
+    
     </style>
 </head>
 <body class="bg-gray-100 font-roboto">
@@ -39,30 +46,28 @@
     <section class="property-carousel my-16">
         <h2 class="text-3xl font-bold text-center mb-8">Maisons</h2>
         <div class="carousel-container relative flex items-center justify-center">
-            <button class="prev absolute left-0 bg-black bg-opacity-50 text-white p-2 text-2xl rounded-full hover:bg-orange-500" onclick="scrollLeft('maisons')">❮</button>
             <div class="carousel flex overflow-hidden w-4/5" id="maisons"></div>
-            <button class="next absolute right-0 bg-black bg-opacity-50 text-white p-2 text-2xl rounded-full hover:bg-orange-500" onclick="scrollRight('maisons')">❯</button>
         </div>
     </section>
     <section class="property-carousel my-16">
         <h2 class="text-3xl font-bold text-center mb-8">Appartements</h2>
         <div class="carousel-container relative flex items-center justify-center">
-            <button class="prev absolute left-0 bg-black bg-opacity-50 text-white p-2 text-2xl rounded-full hover:bg-orange-500" onclick="scrollLeft('appartements')">❮</button>
             <div class="carousel flex overflow-hidden w-4/5" id="appartements"></div>
-            <button class="next absolute right-0 bg-black bg-opacity-50 text-white p-2 text-2xl rounded-full hover:bg-orange-500" onclick="scrollRight('appartements')">❯</button>
         </div>
     </section>
     <section class="property-carousel my-16">
         <h2 class="text-3xl font-bold text-center mb-8">Villas</h2>
         <div class="carousel-container relative flex items-center justify-center">
-            <button class="prev absolute left-0 bg-black bg-opacity-50 text-white p-2 text-2xl rounded-full hover:bg-orange-500" onclick="scrollLeft('villas')">❮</button>
             <div class="carousel flex overflow-hidden w-4/5" id="villas"></div>
-            <button class="next absolute right-0 bg-black bg-opacity-50 text-white p-2 text-2xl rounded-full hover:bg-orange-500" onclick="scrollRight('villas')">❯</button>
         </div>
     </section>
+    
     <footer class="bg-black text-white py-4 text-center">
         <p>© 2024 AADL 2.0. Tous droits réservés.</p>
     </footer>
+
+
+
     <script>
         async function fetchProperties() {
             const response = await fetch('/biens');
@@ -101,14 +106,6 @@
                     villasContainer.appendChild(propertyItem);
                 }
             });
-        }
-
-        function scrollLeft(id) {
-            document.getElementById(id).scrollBy({ left: -300, behavior: 'smooth' });
-        }
-
-        function scrollRight(id) {
-            document.getElementById(id).scrollBy({ left: 300, behavior: 'smooth' });
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
