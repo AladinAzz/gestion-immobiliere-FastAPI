@@ -148,8 +148,16 @@ def add_vente(
         montant_paye=montant_paye,
     )
 
-    db.add(new_vente)
-    db.commit()
-    db.refresh(new_vente)
 
-    return {"message": "Vente registered successfully", "vente_id": new_vente.id_bien}
+    try:
+        db.add(new_vente)
+        db.commit()
+        db.refresh(new_vente)
+    except Exception as e:
+        db.rollback()  # Rollback the session in case of an error
+        raise HTTPException(status_code=500, detail="An error occurred while adding the sale: " + str(e))
+
+    return {"message": "Vente registered successfully", "vente_id": new_vente.id_vente}
+
+
+
