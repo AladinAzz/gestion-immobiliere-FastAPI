@@ -183,6 +183,8 @@ def get_rental(request: Request, db: Session = Depends(get_db)):
 @app.get("/offers", response_class=HTMLResponse)
 def get_rental(request: Request, db: Session = Depends(get_db)):
     offres = crud.get_offers(db)
+    if not offres:
+        raise HTTPException(status_code=404, detail="offres not found")
     return templates.TemplateResponse("liste_offres.html", {"request": request, "title": "Locations", "offers": offres})
 
 

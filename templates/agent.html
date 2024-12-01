@@ -38,7 +38,7 @@
                 <div class="bg-yellow-500 text-white p-4 rounded-lg shadow-lg">
                     <h3 class="text-xl font-bold mb-2">Liste des Offres</h3>
                     <p>Voir toutes les offres disponibles.</p>
-                    <a href="#"  onclick="displayTable('/get-offers',event)" class="mt-2 inline-block bg-white text-yellow-500 px-4 py-2 rounded hover:bg-gray-200">Voir les Offres</a>
+                    <a href="#"  onclick="displayTable('/offers',event)" class="mt-2 inline-block bg-white text-yellow-500 px-4 py-2 rounded hover:bg-gray-200">Voir les Offres</a>
                 </div>
                 <div class="bg-red-500 text-white p-4 rounded-lg shadow-lg">
                     <h3 class="text-xl font-bold mb-2">Liste des Locations</h3>
@@ -52,7 +52,8 @@
                 </div>
             </div>
         </div>
-        <div id="table" class="bg-white p-6 rounded-lg shadow-lg" >
+        <br>
+        <div id="table" class="bg-white p-6 rounded-lg shadow-lg" hidden>
 
         </div>
     </main>
@@ -78,7 +79,7 @@
     const iframe = document.createElement('iframe');
     iframe.src = data;
     iframe.width = "100%";
-    
+    detailsSection.hidden=false;
 
     // Adjust iframe height dynamically
     iframe.onload = function () {
