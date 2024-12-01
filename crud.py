@@ -160,4 +160,37 @@ def add_vente(
     return {"message": "Vente registered successfully", "vente_id": new_vente.id_vente}
 
 
+@db.post("/add_transaction")
+def add_transaction(
+    id_vente: str = Form(...),
+    id_location: str = Form(...),
+    montant: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    # Check if the vente already exists
+    if id_vente != "":
+            existing_vente = db.query(Vente).filter(Vente.id_vente == id_vente).first()
+            if not existing_vente:
+                  raise HTTPException(status_code=400, detail="Vente doesn't exists")
+    else:
+         existing_location = db.query(Location).filter(Location.id_location == id_location).first()
+         if not existing_location:
+            raise HTTPException(status_code=400, detail="location doesn't exists")  
+    # Create a new vente
+    new_trans = Transaction(
+        id_vente=id_vente,
+        id_location=id_location,
+        montant=montant
+    )
+
+
+    try:
+        db.add(new_trans)
+        db.commit()
+        db.refresh(new_trans)
+    except Exception as e:
+        db.rollback()  # Rollback the session in case of an error
+        raise HTTPException(status_code=500, detail="An error occurred while adding the sale: " + str(e))
+
+    return {"message": "Vente registered successfully", "vente_id": new_trans.id_transaction}
 
