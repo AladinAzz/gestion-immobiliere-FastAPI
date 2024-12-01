@@ -64,17 +64,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for prop in ventes %}
-                <li class="flex justify-between bg-white p-2 border-b">
-                    <div class="w-1/12">{{ prop.id_vente }}</div>
-                    <div class="w-1/12"><a href="" onclick="fetchBienDetails( {{ prop.id_bien }} );/*don't correct this*/ return false;" >{{ prop.id_bien }}</a></div> 
-                    <div class="w-3/12">{{ prop.adresse }}</div>
-                    <div class="w-2/12">{{ prop.id_agent }}</div>
-                    <div class="w-2/12">{{ prop.date_vente }}</div>
-                    <div class="w-1/12">{{ prop.prix }}</div>
-                    <div class="w-2/12">{{ prop.montant_paye }}</div>
-                </li>
-                {% endfor %}
+                    {% for offer in offers %}
+                    <tr>
+                        <td class="py-2 px-4 border-b">{{ offer.id_offre }}</td>
+                        <td class="py-2 px-4 border-b">{{ offer.id_agent }}</td>
+                        <td class="py-2 px-4 border-b">{{ offer.id_bien }}</td>
+                        <td class="py-2 px-4 border-b">{{ offer.montant }}</td>
+                        <td class="py-2 px-4 border-b">{{ offer.date_debut }}</td>
+                        <td class="py-2 px-4 border-b">{{ offer.date_fin }}</td>
+                        <td class="py-2 px-4 border-b">{{ offer.type.name }}</td>
+                        <td class="py-2 px-4 border-b">{{ offer.etat.name }}</td>
+                        <td class="py-2 px-4 border-b">
+                            <button class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">Modifier</button>
+                            <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Supprimer</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
