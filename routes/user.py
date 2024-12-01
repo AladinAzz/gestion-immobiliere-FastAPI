@@ -56,7 +56,7 @@ def register_user(
     db.commit()
     db.refresh(new_user)
 
-    return {"message": "User registered successfully", "user_id": new_user.id}
+    return {"message": "User registered successfully", "user_id": new_user.id_utilisateur}
 # Route to log in a user
 @router.post("/login")
 def login_user(

@@ -122,4 +122,35 @@ def get_transaction_by_agent(agent_id: int, db: Session = Depends(get_db)):
           raise HTTPException(status_code=404, detail="transactions not found")
       return transactions
 
+@db.post("/add_sale")
+def Vente(
+    id_bien: str = Form(...),
+    id_agent: str = Form(...),
+    id_proprietaire: str = Form(...),
+    date_vente: str = Form(...),
+    prix: str = Form(...),
+    montant_paye: str = Form(...),  # Default value
+      
+    db: Session = Depends(get_db)):
+   # Create a new vente
+       # Check if the email already exists
+    existing_vente = db.query(Vente).filter(Vente.id_bien == id_bien).first()
+    if existing_vente:
+        raise HTTPException(status_code=400, detail="vente already existed")
+
+    # Create a new user in the database
+    new_vente = Vente(
+      id_bien=id_bien,
+      id_agent=id_agent,
+      id_proprietaire=id_proprietaire,
+      date_vente=date_vente,
+      prix=prix,
+      montant_paye=montant_paye
+    )
+
+    db.add(new_vente)
+    db.commit()
+    db.refresh(new_vente)
+
+    return {"message": "User registered successfully", "user_id": new_vente.id_vente}
 
