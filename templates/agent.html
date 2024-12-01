@@ -28,37 +28,74 @@
                 <div class="bg-blue-500 text-white p-4 rounded-lg shadow-lg">
                     <h3 class="text-xl font-bold mb-2">Accès Utilisateurs</h3>
                     <p>Gérer les utilisateurs de la plateforme.</p>
-                    <a href="/users" class="mt-2 inline-block bg-white text-blue-500 px-4 py-2 rounded hover:bg-gray-200">Voir les Utilisateurs</a>
+                    <a href="#"  onclick="displayTable('/users',event)" class="mt-2 inline-block bg-white text-blue-500 px-4 py-2 rounded hover:bg-gray-200">Voir les Utilisateurs</a>
                 </div>
                 <div class="bg-green-500 text-white p-4 rounded-lg shadow-lg">
                     <h3 class="text-xl font-bold mb-2">Ajouter une Vente</h3>
                     <p>Ajouter une nouvelle vente à la base de données.</p>
-                    <a href="/add-sale" class="mt-2 inline-block bg-white text-green-500 px-4 py-2 rounded hover:bg-gray-200">Ajouter une Vente</a>
+                    <a href="#"  onclick="displayTable('/sales',event)" class="mt-2 inline-block bg-white text-green-500 px-4 py-2 rounded hover:bg-gray-200">Ajouter une Vente</a>
                 </div>
                 <div class="bg-yellow-500 text-white p-4 rounded-lg shadow-lg">
                     <h3 class="text-xl font-bold mb-2">Liste des Offres</h3>
                     <p>Voir toutes les offres disponibles.</p>
-                    <a href="/get-offers" class="mt-2 inline-block bg-white text-yellow-500 px-4 py-2 rounded hover:bg-gray-200">Voir les Offres</a>
+                    <a href="#"  onclick="displayTable('/get-offers',event)" class="mt-2 inline-block bg-white text-yellow-500 px-4 py-2 rounded hover:bg-gray-200">Voir les Offres</a>
                 </div>
                 <div class="bg-red-500 text-white p-4 rounded-lg shadow-lg">
                     <h3 class="text-xl font-bold mb-2">Liste des Locations</h3>
                     <p>Voir toutes les locations en cours.</p>
-                    <a href="/rentals" class="mt-2 inline-block bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-200">Voir les Locations</a>
+                    <a href="#"  onclick="displayTable('/rentals',event)" class="mt-2 inline-block bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-200">Voir les Locations</a>
                 </div>
                 <div class="bg-purple-500 text-white p-4 rounded-lg shadow-lg">
                     <h3 class="text-xl font-bold mb-2">Transactions</h3>
                     <p>Voir toutes les transactions effectuées.</p>
-                    <a href="/get-transactions" class="mt-2 inline-block bg-white text-purple-500 px-4 py-2 rounded hover:bg-gray-200">Voir les Transactions</a>
+                    <a href="#"  onclick="displayTable('/get-transactions',event)" class="mt-2 inline-block bg-white text-purple-500 px-4 py-2 rounded hover:bg-gray-200">Voir les Transactions</a>
                 </div>
             </div>
         </div>
+        <div id="table" class="bg-white p-6 rounded-lg shadow-lg" >
+
+        </div>
     </main>
 
-    <footer class="bg-black shadow mt-4">
+    <footer class="bg-black shadow mt-4" >
         <div class="container mx-auto p-4 text-center">
             <p class="text-white">© 2024 AADL 2.0. Tous droits réservés.</p>
         </div>
     </footer>
+    <script>
+ function displayTable(data, event) {
+    console.log("Triggered displayTable with data:", data);
+    event.preventDefault();
+
+    const detailsSection = document.getElementById('table');
+    if (!detailsSection) {
+        console.error("No element found with ID: 'table'");
+        return;
+    }
+
+    detailsSection.innerHTML = ''; // Clear existing content
+
+    const iframe = document.createElement('iframe');
+    iframe.src = data;
+    iframe.width = "100%";
+    
+
+    // Adjust iframe height dynamically
+    iframe.onload = function () {
+        try {
+            // Get the iframe's content height
+            const iframeContentHeight = iframe.contentWindow.document.body.scrollHeight;
+            iframe.style.height = iframeContentHeight + "px";
+        } catch (error) {
+            console.error("Unable to adjust iframe height due to cross-origin restrictions:", error);
+        }
+    };
+
+    detailsSection.appendChild(iframe);
+}
+
+
+    </script>
 </body>
 </html>
 
