@@ -33,7 +33,7 @@ def register_user(
     telephone: str = Form(...),
     mot_de_passe: str = Form(...),
     role: str = Form("visit"),  # Default value
-    date_creation: str = Form("2021-10-10"),  # Default value
+    date_creation: str = Form("10-10-2021"),  # Default value
     db: Session = Depends(get_db)):
    # Create a new user
        # Check if the email already exists
