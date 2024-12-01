@@ -176,7 +176,7 @@ def get_rental(request: Request, db: Session = Depends(get_db)):
 @app.get("/users", response_class=HTMLResponse)
 def get_rental(request: Request, db: Session = Depends(get_db)):
     users = crud.get_users(db)
-    return templates.TemplateResponse("acces_utilisateurs.html", {"request": request, "title": "Locations", "users": users})
+    return templates.TemplateResponse("acces_utilisateurs.html", {"request": request, "title": "Users", "users": users})
 
 
 
@@ -185,4 +185,7 @@ def get_rental(request: Request, db: Session = Depends(get_db)):
     offres = crud.get_offers(db)
     return templates.TemplateResponse("liste_offres.html", {"request": request, "title": "Locations", "offers": offres})
 
+@app.get("/sales", response_class=HTMLResponse)
+async def read_list(request: Request):
+    return templates.TemplateResponse("liste_ventes.html", {"request": request, "title": "Ventes"}) 
 
