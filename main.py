@@ -69,6 +69,8 @@ def get_available_biens(db: Session = Depends(get_db)):
 async def get_bien(request: Request,id_user: int, db: Session = Depends(get_db) ):
     
     Prop=db.query(Proprietaire).filter(Proprietaire.id_utilisateur == id_user).first()
+    if not Prop:
+        raise HTTPException(status_code=404, detail="Proprietaire not found")
     # Fetch the details of the property using the provided id
     vente_details = db.query(Vente).filter(Vente.id_proprietaire == Prop.id_proprietaire).all()
     
@@ -188,6 +190,16 @@ def get_rental(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse("liste_offres.html", {"request": request, "title": "Locations", "offers": offres})
 
 @app.get("/sales", response_class=HTMLResponse)
-async def read_list(request: Request):
-    return templates.TemplateResponse("liste_ventes.html", {"request": request, "title": "Ventes"}) 
+def get_sale(request: Request, db: Session = Depends(get_db)):
+    ventes = crud.get_sales(db)
+    if not ventes:
+        raise HTTPException(status_code=404, detail="vente not found")
+    for vente in ventes:
+        # Fetch the address associated with the Bien linked to this Vente
+        bien = db.query(Bien).filter(Bien.id_bien == vente.id_bien).first()
+        if bien:
+            vente.adresse = bien.adresse
+    
+        
+    return templates.TemplateResponse("liste_ventes.html", {"request": request, "title": "Locations", "propbien": ventes})
 
