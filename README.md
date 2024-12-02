@@ -1,2 +1,2 @@
 # gestion-immobiliere FastAPI
-a real estate agency web app that can be start to action 
+une application web d'agence immobilière qui peut être mise en action  
