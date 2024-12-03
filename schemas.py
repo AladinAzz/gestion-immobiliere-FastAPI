@@ -57,7 +57,7 @@ class UtilisateurCreate(BaseModel):
     telephone: str
     mot_de_passe: str
     role: Optional[str] = "visit"
-    date_creation: Optional[str] ="10-10-2020"
+    date_creation: Optional[str] 
 
 
 
@@ -295,3 +295,15 @@ class TransactionCreate(TransactionBase):
 
 class TransactionResponse(TransactionBase):
     id_transaction: int
+
+#secutity
+class Token(BaseModel):
+    acces_token: str
+    token_type: str
+
+
+
+
+
+
+

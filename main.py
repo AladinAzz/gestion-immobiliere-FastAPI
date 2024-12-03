@@ -6,7 +6,6 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from typing import List
 import crud
-
 from models import *  
 from database import get_db
 from schemas import *  
@@ -16,15 +15,14 @@ from starlette.responses import RedirectResponse
 import logging
 from fastapi.responses import JSONResponse
 import httpx
-from fastapi.routing import APIRoute
-
+from fastapi import FastAPI
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
-
-
-
 app.include_router(user.router)
 app.include_router(crud.db)
+app.include_router(auth)
 # Mount the static directory to serve static files (CSS, images, etc.)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -34,6 +32,7 @@ templates = Jinja2Templates(directory="templates")
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "title": "Accueil - AADL 2.0"})
+
 
 @app.get("/list", response_class=HTMLResponse)
 async def read_list(request: Request):
