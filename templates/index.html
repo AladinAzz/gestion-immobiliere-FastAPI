@@ -16,7 +16,13 @@
         <ul class="nav-links">
             <li><a href="/">Accueil</a></li>
             <li><a href="/list">Nos Propriétés</a></li>
-            <li><a href="/login">Connexion</a></li>
+            <li><a href="/login">
+                {% if not connected %}
+                    Déconnexion
+                {% else %}
+                    Connexion
+                {% endif %}
+            </a></li>
         </ul>
     </nav>
 

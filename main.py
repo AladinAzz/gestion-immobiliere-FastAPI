@@ -31,7 +31,12 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "title": "Accueil - AADL 2.0"})
+    return templates.TemplateResponse("index.html", {"request": request, "title": "Accueil - AADL 2.0","connected":False})
+
+@app.post("/", response_class=HTMLResponse)
+async def read_root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request, "title": "Accueil - AADL 2.0","connected":True})
+
 
 
 @app.get("/list", response_class=HTMLResponse)
@@ -145,7 +150,7 @@ async def redirect(request: Request, token: str = Form(...)):
         case "visit":
             return RedirectResponse(url="/")
         case "proprietaire":
-            link=f"{base_url}/prop/{token_data['user_id']}"
+            link=f"{base_url}/prop/{token_data.user_id}"
             async with httpx.AsyncClient() as client:
                 # Construct the full URL for the GET request
                 response = await client.get(link)
@@ -160,9 +165,9 @@ async def redirect(request: Request, token: str = Form(...)):
                 else:
                     raise HTTPException(status_code=response.status_code, detail="Error fetching property data")
         case "locataire":
-            return RedirectResponse(url=f"/loc/{token_data['user_id']}")
+            return RedirectResponse(url=f"/loc/{token_data.user_id}")
         case "agent":   
-            return RedirectResponse(url=f"/agent/{token_data['user_id']}")
+            return RedirectResponse(url=f"/agent/{token_data.user_id}")
         case _:
             raise HTTPException(status_code=400, detail="Unknown role")
         

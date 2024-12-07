@@ -354,7 +354,7 @@
         </div>
         <!-- Sign-In Form -->
         <div class="form-container sign-in-container">
-            <form action="#" method="POST">
+            <form action="/auth/token" method="POST">
                 <h1>Sign in</h1>
                 <span>Use your account</span>
                 <input name="email" id="email" placeholder="Email" required="" type="email"/>
@@ -399,42 +399,56 @@
       
 
         const myButton = document.getElementById("sub");
-myButton.addEventListener("click", async (event) => {
+        myButton.addEventListener("click", async (event) => {
     event.preventDefault(); // Prevent default form submission
 
     let email = document.getElementById("email").value;
     let password = document.getElementById("pass").value;
 
     const formData = new FormData();
-    formData.append('email', email);
-    formData.append('mot_de_passe', password);
+    formData.append('username', email);
+    formData.append('password', password);
 
-    const response = await fetch('/users/login', {
+    // Send login request
+    const response = await fetch('/auth/token', {
         method: 'POST',
         body: formData,
     });
 
     if (response.ok) {
         const data = await response.json();
-        saveToken(data.token); // Assuming this function saves the token
+        saveToken(data["access_token"]); // Save the token (you can define this function to save it in localStorage, sessionStorage, etc.)
         alert('Login successful!');
 
-        // Prepare to redirect
-        let formDataa = new FormData();
-        formDataa.append('token', getToken()); // Ensure this returns a valid token
+        console.log("Token being sent:", data.access_token);
 
-        // Log the token being sent
+        // Prepare form data for the redirect endpoint
+        let formDataa = new FormData();
+        formDataa.append('token', getToken()); // Ensure getToken() retrieves the saved token
+
+        // Log the token being sent for redirection
         console.log("Token being sent:", getToken());
 
-        // Redirect
-        const redirectResponse = await fetch('/redirect', {
+        // Redirect request
+        const redirectResponse =await fetch('/redirect', {
             method: 'POST',
             body: formDataa,
         });
 
         if (redirectResponse.ok) {
             // Handle successful redirect
+            console.log(redirectResponse)
             console.log("Redirect successful");
+            window.location.href = redirectResponse.url;
+            
+            // Check if the server sends a redirect URL
+            if (redirectData.redirect_url) {
+                // Redirect to the provided URL
+                window.location.href = redirectData.redirect_url;
+            } else {
+                // Handle case where redirect_url is not provided (default to a dashboard or home)
+                window.location.href = '/'; // Example default URL
+            }
         } else {
             console.error('Redirect failed:', redirectResponse.status);
         }
@@ -442,6 +456,8 @@ myButton.addEventListener("click", async (event) => {
         alert('Invalid credentials');
     }
 });
+
+
       </script>
       
 

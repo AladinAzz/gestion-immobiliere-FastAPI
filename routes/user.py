@@ -50,9 +50,7 @@ def register_user(
     return {"message": "User registered successfully", "user_id": new_user.id_utilisateur}
 # Route to log in a user
 @router.post("/login")
-def login_user(user:Annotated[dict,Depends(get_current_user_from_token)],
-    db: Session = Depends(get_db)
-):
+def login_user(user:Annotated[dict,Depends(get_current_user_from_token)],db: Session = Depends(get_db)):
     
     if user is None:
          raise HTTPException(status_code=401, detail="Invalid credentials")
