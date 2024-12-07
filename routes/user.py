@@ -7,7 +7,7 @@ from security import *
 from jose import jwt
 from starlette.responses import RedirectResponse
 from urllib.parse import parse_qs
-
+import crud
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
@@ -65,7 +65,8 @@ def login_user(user:Annotated[dict,Depends(get_current_user_from_token)],
 
 # Route to get the current user's information
 @router.get("/me", response_model=UtilisateurResponse)
-def get_current_user(current_user: Utilisateur = Depends(get_current_user_from_token)):
+def get_current_user(current_user: Token_data = Depends(get_current_user_from_token),db:Session=Depends(get_db)):
+    current_user=crud.get_user(current_user.user_id,db)
     return current_user
 
 

@@ -21,23 +21,32 @@ def get_bien(id_bien: int,db: Session = Depends(get_db)):
             raise HTTPException(status_code=404, detail="Property not found")
         return property_details
 
-def get_user(id_utilisateur: int):
-        utilisateur = db.query(Utilisateur).filter(Utilisateur.id_utilisateur == id_utilisateur).first()
-        if not utilisateur:
-            raise HTTPException(status_code=404, detail="user not found")
-        return utilisateur
 
-def get_agent(id_utilisateur: int):
+@db.get("/get-user",response_model=UtilisateurResponse)
+def get_user(id_utilisateur: int, db: Session = Depends(get_db))->UtilisateurResponse:
+    utilisateur = db.query(Utilisateur).filter(Utilisateur.id_utilisateur == id_utilisateur).first()
+    if not utilisateur:
+        raise HTTPException(status_code=404, detail="User not found")
+    return utilisateur
+
+
+
+
+def get_agent(id_utilisateur: int,db: Session = Depends(get_db)):
       agent = db.query(Agent).filter(Agent.id_utilisateur == id_utilisateur).first()
       if not agent:
             raise HTTPException(status_code=404, detail="agent not found")
       return agent
 
-def get_agent_by_id(id_agent: int):
+def get_agent_by_id(id_agent: int,db: Session = Depends(get_db)):
         user = db.query(Utilisateur).join(Utilisateur,Agent.id_utilisateur==Utilisateur.id_utilisateur).filter(Agent.id_agent == id_agent).first()
         if not user:
             raise HTTPException(status_code=404, detail="user not found")
         return user
+
+
+
+
 
 
 

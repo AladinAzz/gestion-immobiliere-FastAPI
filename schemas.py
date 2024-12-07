@@ -298,8 +298,16 @@ class TransactionResponse(TransactionBase):
 
 #secutity
 class Token(BaseModel):
-    acces_token: str
+    access_token: str
     token_type: str
+
+
+class Token_data(BaseModel):
+    role : RoleEnum
+    user_id :int
+
+
+
 
 
 

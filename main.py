@@ -63,7 +63,6 @@ def get_available_biens(db: Session = Depends(get_db)):
     return available_biens
 
 
-
 @app.get("/prop/{id_user}")
 async def get_bien(request: Request,id_user: int, db: Session = Depends(get_db) ):
     
@@ -140,7 +139,7 @@ async def redirect(request: Request, token: str = Form(...)):
     base_url = f"http://{request.client.host}:{request.client.port}"  # Adjust for https if needed
     
     # Check the role and handle redirection or fetching data
-    match token_data.get("role"):
+    match token_data.role:
         case "admin":
             return RedirectResponse(url="/admin")
         case "visit":
