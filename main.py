@@ -43,7 +43,7 @@ async def read_root(request: Request):
 async def read_list(request: Request):
     return templates.TemplateResponse("list.html", {"request": request, "title": "Nos Propriétés"})
 
-@app.get("/agent", response_class=HTMLResponse)
+@app.api_route("/agent",methods=["GET","POST"], response_class=HTMLResponse)
 async def read_list(request: Request):
     return templates.TemplateResponse("agent.html", {"request": request, "title": "Nos Propriétés"})
 
@@ -68,7 +68,7 @@ def get_available_biens(db: Session = Depends(get_db)):
     return available_biens
 
 
-@app.get("/prop/{id_user}")
+@app.api_route("/prop/{id_user}",methods=["GET","POST"])
 async def get_bien(request: Request,id_user: int, db: Session = Depends(get_db) ):
     
     Prop=db.query(Proprietaire).filter(Proprietaire.id_utilisateur == id_user).first()
@@ -95,10 +95,10 @@ async def read_listt(request: Request, vente_details: List):
     # Render the HTML template and pass the vente_details as 'propbien'
     return templates.TemplateResponse("prop.html", {"request": request, "title": "Mes Propriétés", "propbien": vente_details})
 
-@app.get("/agent/{id_user}")
-async def get_bien(request: Request,id_user: int, db: Session = Depends(get_db) ):
+@app.api_route("/agent/{user_id}",methods=["GET","POST"])
+async def get_bien(request: Request,user_id:int ,db: Session = Depends(get_db) ):
     
-    id_agent=db.query(Agent.id_agent).filter(Agent.id_utilisateur == id_user).first()
+    id_agent=db.query(Agent.id_agent).filter(Agent.id_utilisateur == user_id).first()
     # Fetch the details of the property using the provided id
     vente_details = db.query(Vente).filter(Vente.id_agent == id_agent).all()
     
@@ -150,24 +150,11 @@ async def redirect(request: Request, token: str = Form(...)):
         case "visit":
             return RedirectResponse(url="/")
         case "proprietaire":
-            link=f"{base_url}/prop/{token_data.user_id}"
-            async with httpx.AsyncClient() as client:
-                # Construct the full URL for the GET request
-                response = await client.get(link)
-                
-                # Log the response status code and content
-                logger.info(f"Response status code: {response.status_code}")
-                logger.info(f"Response content: {response.text}")
-                
-                # Check if the response is successful
-                if response.status_code == 200:
-                    return JSONResponse(content=response.json(), status_code=response.status_code)
-                else:
-                    raise HTTPException(status_code=response.status_code, detail="Error fetching property data")
+             return RedirectResponse(url=f"/prop/{token_data.user_id}")
         case "locataire":
             return RedirectResponse(url=f"/loc/{token_data.user_id}")
         case "agent":   
-            return RedirectResponse(url=f"/agent/{token_data.user_id}")
+            return RedirectResponse(url=f"/agent")
         case _:
             raise HTTPException(status_code=400, detail="Unknown role")
         
