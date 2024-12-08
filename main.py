@@ -29,13 +29,12 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Specify the templates directory
 templates = Jinja2Templates(directory="templates")
 
-@app.get("/", response_class=HTMLResponse)
+@app.api_route("/", response_class=HTMLResponse,methods=["POST","GET"])
 async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "title": "Accueil - AADL 2.0","connected":False})
-
-@app.post("/", response_class=HTMLResponse)
-async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "title": "Accueil - AADL 2.0","connected":True})
+    if request.method=="POST":
+        return templates.TemplateResponse("index.html", {"request": request, "title": "Accueil - AADL 2.0","connected":False})
+    else:
+        return templates.TemplateResponse("index.html", {"request": request, "title": "Accueil - AADL 2.0","connected":True})
 
 
 
