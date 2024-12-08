@@ -95,7 +95,7 @@
                 propertyItem.className = 'carousel-item bg-white rounded-lg shadow-lg mx-2';
                 propertyItem.innerHTML = `
                     <img alt="Image of ${property.description}" class="w-full h-48 object-cover rounded-t-lg" src="${getRandomImage(property.type)}" />
-                    <button class="btn-details bg-orange-500 text-white py-2 w-full rounded-b-lg hover:bg-orange-600">Voir Détails</button>
+                    <button class="btn-details bg-orange-500 text-white py-2 w-full rounded-b-lg hover:bg-orange-600" onclick='get_info()'>Voir Détails</button>
                 `;
 
                 if (property.type === 'maison') {
@@ -112,6 +112,26 @@
             const properties = await fetchProperties();
             renderProperties(properties);
         });
+        function displayBienDetails(data) {
+    const detailsSection = document.createElement("div");
+    detailsSection.className = "bg-white p-6 rounded-lg shadow-lg mt-6 relative";
+    detailsSection.id = 
+    detailsSection.innerHTML = `
+        <button id="bien-details-button" class="absolute top-2 right-2 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg" onclick="toggleVisibility()">
+                <i class="fas fa-eye-slash"></i> Hide Details
+        </button>
+        <h3 class="text-xl font-bold mb-2">Détails du Bien</h3>
+        <p><strong>Id Bien:</strong> ${data.id_bien}</p>
+        <p><strong>Adresse:</strong> ${data.adresse}</p> <!-- Corrected "adress" to "adresse" -->
+        <p><strong>Superficie:</strong> ${data.superficie} m²</p>
+        <p><strong>Type:</strong> ${data.type}</p>
+        <p><strong>Ville:</strong> ${data.ville}</p>
+        <p><strong>Agent ID:</strong> ${data.id_agent}</p> <!-- Display Agent ID, adjust as needed -->
+    `;
+    detailsSection.hidden = false;
+    detailsSection.scrollIntoView({ behavior: 'smooth' });
+}
+
     </script>
 </body>
 </html>

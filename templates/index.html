@@ -17,7 +17,8 @@
             <li><a href="/">Accueil</a></li>
             <li><a href="/list">Nos Propriétés</a></li>
             <li><a href="/login">
-                {% if not connected %}
+                {{connected}}
+                {% if connected %}
                     Déconnexion
                 {% else %}
                     Connexion

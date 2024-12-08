@@ -193,3 +193,9 @@ def get_sale(request: Request, db: Session = Depends(get_db)):
         
     return templates.TemplateResponse("liste_ventes.html", {"request": request, "title": "Locations", "propbien": ventes})
 
+@app.get("/transactions", response_class=HTMLResponse)
+def get_rental(request: Request, db: Session = Depends(get_db)):
+    transactions = crud.get_transactions(db)
+    if not transactions:
+        raise HTTPException(status_code=404, detail="transactions not found")
+    return templates.TemplateResponse("transactions.html", {"request": request, "title": "Locations", "transactions": transactions})
