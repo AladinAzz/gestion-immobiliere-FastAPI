@@ -1,0 +1,56 @@
+<html lang="fr"></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../static/pic.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Ajouter une Vente</title>
+</head>
+<body class="bg-gray-100">
+    <main class="container mx-auto p-4">
+       
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold mb-4">Ajouter une Vente</h2>
+            <form action="/add-sale" method="POST" class="space-y-4">
+                <div>
+                    <label for="id_bien" class="block text-sm font-medium text-gray-700">ID Bien</label>
+                    <input type="number" name="id_bien" id="id_bien" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="id_agent" class="block text-sm font-medium text-gray-700">ID Agent</label>
+                    <input type="number" name="id_agent" id="id_agent" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="id_proprietaire" class="block text-sm font-medium text-gray-700">ID Propriétaire</label>
+                    <input type="number" name="id_proprietaire" id="id_proprietaire" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="date_vente" class="block text-sm font-medium text-gray-700">Date de Vente</label>
+                    <input type="date" name="date_vente" id="date_vente" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="prix" class="block text-sm font-medium text-gray-700">Prix</label>
+                    <input type="number" step="0.01" name="prix" id="prix" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="montant_paye" class="block text-sm font-medium text-gray-700">Montant Payé</label>
+                    <input type="number" step="0.01" name="montant_paye" id="montant_paye" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="etat" class="block text-sm font-medium text-gray-700">État</label>
+                    <select name="etat" id="etat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                        <option value="non_payée">Non Payée</option>
+                        <option value="payée">Payée</option>
+                        <option value="annuler">Annulée</option>
+                        <option value="terminé">Terminée</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Ajouter la Vente</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>
