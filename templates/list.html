@@ -34,7 +34,13 @@
         <ul class="flex space-x-6">
             <li><a class="hover:text-orange-500" href="/">Accueil</a></li>
             <li><a class="hover:text-orange-500" href="/list">Nos Propriétés</a></li>
-            <li><a class="hover:text-orange-500" href="/login">Connexion</a></li>
+            <li><a href="/login">
+                {% if not connected %}
+                    Déconnexion
+                {% else %}
+                    Connexion
+                {% endif %}
+            </a></li>
         </ul>
     </nav>
     <header class="hero bg-cover bg-center text-white h-screen flex flex-col justify-center items-center text-center" style="background-image: url('../static/japanese-culture-with-moving-car.jpg');background-size: cover;">
@@ -135,3 +141,19 @@
     </script>
 </body>
 </html>
+
+
+<div class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden" id="popup">
+    <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700" onclick="closePopup()">
+        Close
+    </button>
+</div>
+<script>
+    function showPopup() {
+             document.getElementById('popup').classList.remove('hidden');
+         }
+ 
+         function closePopup() {
+             document.getElementById('popup').classList.add('hidden');
+         }
+   </script>
