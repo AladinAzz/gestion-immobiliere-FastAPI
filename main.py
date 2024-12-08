@@ -119,28 +119,17 @@ async def read_list2(request: Request, vente_details: List[VenteResponse]):
     # Render the HTML template and pass the vente_details as 'propbien'
     return templates.TemplateResponse("agent.html", {"request": request, "title": "Agent Space", "propbien": vente_details})
 
-
-
-
-
 @app.get("/login", response_class=HTMLResponse)
 async def read_list(request: Request):
     return templates.TemplateResponse("log.html", {"request": request, "title": "Log In"}) 
 
-
-
 logger = logging.getLogger(__name__)
-
 
 @app.post("/redirect")
 async def redirect(request: Request, token: str = Form(...)):
-    logger.info(f"Received request with token: {token}")
     
     # Decode the token
     token_data = decode_access_token(token)
-    
-    # Get the base URL from the request
-    base_url = f"http://{request.client.host}:{request.client.port}"  # Adjust for https if needed
     
     # Check the role and handle redirection or fetching data
     match token_data.role:
@@ -157,8 +146,6 @@ async def redirect(request: Request, token: str = Form(...)):
         case _:
             raise HTTPException(status_code=400, detail="Unknown role")
         
-
-
 @app.get("/rentals", response_class=HTMLResponse)
 def get_rental(request: Request, db: Session = Depends(get_db)):
     locations = crud.get_rentals(db)
@@ -168,8 +155,6 @@ def get_rental(request: Request, db: Session = Depends(get_db)):
 def get_rental(request: Request, db: Session = Depends(get_db)):
     users = crud.get_users(db)
     return templates.TemplateResponse("acces_utilisateurs.html", {"request": request, "title": "Users", "users": users})
-
-
 
 @app.get("/offers", response_class=HTMLResponse)
 def get_rental(request: Request, db: Session = Depends(get_db)):
@@ -191,10 +176,28 @@ def get_sale(request: Request, db: Session = Depends(get_db)):
     
         
     return templates.TemplateResponse("liste_ventes.html", {"request": request, "title": "Locations", "propbien": ventes})
-
 @app.get("/transactions", response_class=HTMLResponse)
 def get_rental(request: Request, db: Session = Depends(get_db)):
     transactions = crud.get_transactions(db)
     if not transactions:
         raise HTTPException(status_code=404, detail="transactions not found")
     return templates.TemplateResponse("transactions.html", {"request": request, "title": "Locations", "transactions": transactions})
+
+
+@app.api_route("/add-sale",methods=["GET","POST"])
+async def add_sale(request: Request, db: Session = Depends(get_db)):
+    if request.method == "POST":
+        # Get the data from the form
+        data = await request.json()
+        # Create a new Vente
+        
+        vente = crud.create_sale(db, data)  
+        # Redirect to the new Vente
+        return RedirectResponse(url=f"/sales" , status_code=200)
+    
+    else:
+        return templates.TemplateResponse("ajouter_vente.html", {"request": request, "title": "ventes"}) 
+
+
+
+
