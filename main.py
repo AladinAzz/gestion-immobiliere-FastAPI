@@ -13,8 +13,6 @@ from routes import user
 from security import *
 from starlette.responses import RedirectResponse
 import logging
-from fastapi.responses import JSONResponse
-import httpx
 from fastapi import FastAPI
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
