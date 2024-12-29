@@ -54,6 +54,16 @@ async def get_bien(id_bien: int,db: Session = Depends(get_db)):
     return property_details
 
 
+@app.get("/bien", response_model=List[BienResponse])
+def get_available_biens(request: Request,db: Session = Depends(get_db)):
+    # Query to get ids of biens where their offer's state is 'dispo'
+    available_biens = crud.get_all_bien(db)
+    if not available_biens:
+        raise HTTPException(status_code=404, detail="No available properties found")
+    
+    return templates.TemplateResponse("bien.html", {"request": request, "title": "biens", "biens": available_biens})
+
+
 @app.get("/biens", response_model=List[BienResponse])
 def get_available_biens(db: Session = Depends(get_db)):
     # Query to get ids of biens where their offer's state is 'dispo'
@@ -157,28 +167,26 @@ def get_rental(request: Request, db: Session = Depends(get_db)):
 @app.get("/offers", response_class=HTMLResponse)
 def get_rental(request: Request, db: Session = Depends(get_db)):
     offres = crud.get_offers(db)
-    if not offres:
-        raise HTTPException(status_code=404, detail="offres not found")
+    
     return templates.TemplateResponse("liste_offres.html", {"request": request, "title": "Locations", "offers": offres})
 
 @app.get("/sales", response_class=HTMLResponse)
 def get_sale(request: Request, db: Session = Depends(get_db)):
     ventes = crud.get_sales(db)
     if not ventes:
-        raise HTTPException(status_code=404, detail="vente not found")
-    for vente in ventes:
+        
+        for vente in ventes:
         # Fetch the address associated with the Bien linked to this Vente
-        bien = db.query(Bien).filter(Bien.id_bien == vente.id_bien).first()
-        if bien:
-            vente.adresse = bien.adresse
+            bien = db.query(Bien).filter(Bien.id_bien == vente.id_bien).first()
+            if bien:
+                vente.adresse = bien.adresse
     
         
     return templates.TemplateResponse("liste_ventes.html", {"request": request, "title": "Locations", "propbien": ventes})
 @app.get("/transactions", response_class=HTMLResponse)
 def get_rental(request: Request, db: Session = Depends(get_db)):
     transactions = crud.get_transactions(db)
-    if not transactions:
-        raise HTTPException(status_code=404, detail="transactions not found")
+    
     return templates.TemplateResponse("transactions.html", {"request": request, "title": "Locations", "transactions": transactions})
 
 

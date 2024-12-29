@@ -5,40 +5,41 @@
     <link rel="icon" href="../static/pic.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Liste des Offres</title>
+    <title>Liste des Biens</title>
 </head>
 <body class="bg-gray-100">
     
         <div class="bg-white p-6 rounded-lg shadow-lg">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold">Liste des offres</h2>
-                <a href="/add-Bien" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Ajouter un Offre</a>
+                <h2 class="text-2xl font-bold">Liste Biens</h2>
+                <a href="/add-Bien" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Ajouter un Bien</a>
             </div>
             <table class="min-w-full bg-white">
                 <thead>
                     <tr>
-                        <th class="py-2 px-4 border-b">ID Offre</th>
-                        <th class="py-2 px-4 border-b">ID Agent</th>
                         <th class="py-2 px-4 border-b">ID Bien</th>
-                        <th class="py-2 px-4 border-b">Montant</th>
-                        <th class="py-2 px-4 border-b">Date Début</th>
-                        <th class="py-2 px-4 border-b">Date Fin</th>
+                        <th class="py-2 px-4 border-b">Adresse</th>
+                        <th class="py-2 px-4 border-b">Superficie</th>
+                        <th class="py-2 px-4 border-b">Etat</th>
                         <th class="py-2 px-4 border-b">Type</th>
-                        <th class="py-2 px-4 border-b">État</th>
+                        <th class="py-2 px-4 border-b">Ville</th>
+                        <th class="py-2 px-4 border-b">ID Prop</th>
+                        <th class="py-2 px-4 border-b">ID Agent</th>
                         <th class="py-2 px-4 border-b">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for offer in offers %}
+                    {% for bien in biens %}
                     <tr>
-                        <td class="py-2 px-4 border-b">{{ offer.id_offre }}</td>
-                        <td class="py-2 px-4 border-b">{{ offer.id_agent }}</td>
-                        <td class="py-2 px-4 border-b">{{ offer.id_bien }}</td>
-                        <td class="py-2 px-4 border-b">{{ offer.montant }}</td>
-                        <td class="py-2 px-4 border-b">{{ offer.date_debut }}</td>
-                        <td class="py-2 px-4 border-b">{{ offer.date_fin }}</td>
-                        <td class="py-2 px-4 border-b">{{ offer.type.name }}</td>
-                        <td class="py-2 px-4 border-b">{{ offer.etat.name }}</td>
+                        
+                        <td class="py-2 px-4 border-b">{{ bien.id_bien }}</td>
+                        <td class="py-2 px-4 border-b">{{ bien.adresse }}</td>
+                        <td class="py-2 px-4 border-b">{{ bien.superficie }}</td>
+                        <td class="py-2 px-4 border-b">{{ bien.etat.name }}</td>
+                        <td class="py-2 px-4 border-b">{{ bien.type.name }}</td>
+                        <td class="py-2 px-4 border-b">{{ bien.ville }}</td>
+                        <td class="py-2 px-4 border-b">{{ bien.id_proprietaire }}</td>
+                        <td class="py-2 px-4 border-b">{{ bien.id_agent }}</td>
                         <td class="py-2 px-4 border-b">
                             <button class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">Modifier</button>
                             <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Supprimer</button>
