@@ -37,7 +37,7 @@
                         <td class="py-2 px-4 border-b">{{ user.role.name }}</td>
                         <td class="py-2 px-4 border-b">
                             <button class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">Modifier</button>
-                            <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Supprimer</button>
+                            <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onclick="deleteUser({{ user.id_utilisateur }})">Supprimer</button>
                         </td>
                     </tr>
                     {% endfor %}
@@ -46,6 +46,13 @@
         </div>
     </main>
 
-    
+    <script>
+        function deleteUser(id_utilisateur) {
+            if (confirm("Voulez-vous supprimer cet utilisateur ?")) {
+                window.location.href = "/delete-user/" + id_utilisateur;
+                }
+                }
+                
+    </script>
 </body>
 </html>

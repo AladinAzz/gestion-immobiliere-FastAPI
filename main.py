@@ -102,6 +102,36 @@ async def read_listt(request: Request, vente_details: List):
     # Render the HTML template and pass the vente_details as 'propbien'
     return templates.TemplateResponse("prop.html", {"request": request, "title": "Mes Propriétés", "propbien": vente_details})
 
+
+@app.api_route("/loc/{id_user}",methods=["GET","POST"])
+async def get_bien(request: Request,id_user: int, db: Session = Depends(get_db) ):
+    
+    Prop=db.query(Locataire).filter(Locataire.id_utilisateur == id_user).first()
+    if not Prop:
+        raise HTTPException(status_code=404, detail="Locataire not found")
+    # Fetch the details of the property using the provided id
+    location_details = db.query(Location).filter(Location.id_locataire == Prop.id_locataire).all()
+    
+    # If no data found, return 404
+    if not location_details:
+        raise HTTPException(status_code=404, detail="Property not found")
+    
+     # Fetch and associate the address for each Vente entry
+    for vente in location_details:
+        # Fetch the address associated with the Bien linked to this Vente
+        bien = db.query(Bien).filter(Bien.id_bien == vente.id_bien).first()
+        if bien:
+            vente.adresse = bien.adresse  # Add the address to the vente object
+        
+    # Pass the vente_details to the read_list function along with the request
+    return await read_listt(request=request, vente_details=location_details)
+
+async def read_listt(request: Request, vente_details: List):
+    # Render the HTML template and pass the vente_details as 'propbien'
+    return templates.TemplateResponse("locataire.html", {"request": request, "title": "Mes Locations", "propbien": vente_details})
+
+
+
 @app.api_route("/agent/{user_id}",methods=["GET","POST"])
 async def get_bien(request: Request,user_id:int ,db: Session = Depends(get_db) ):
     
@@ -197,12 +227,83 @@ async def add_sale(request: Request, db: Session = Depends(get_db)):
         data = await request.json()
         # Create a new Vente
         
-        vente = crud.create_sale(db, data)  
+        vente = crud.add_vente(db, data)  
         # Redirect to the new Vente
         return RedirectResponse(url=f"/sales" , status_code=200)
     
     else:
         return templates.TemplateResponse("ajouter_vente.html", {"request": request, "title": "ventes"}) 
+
+
+
+@app.get("/add-user")
+async def add_sale(request: Request, db: Session = Depends(get_db)):
+        return templates.TemplateResponse("ajouter_utilisateur.html", {"request": request, "title": "add user"}) 
+
+@app.post("/add-user")
+async def add_sale(
+    request: Request,
+    nom: str = Form(...),
+    prenom: str = Form(...),
+    email: str =  Form(...),
+    telephone: str = Form(...),
+    mot_de_passe: str = Form(...),
+    role: str =Form(...),
+    db: Session = Depends(get_db)
+):
+    
+        # Create a new user
+    existing_user = db.query(Utilisateur).filter(Utilisateur.email == email).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="User already exists")
+
+    # Create a new user
+    new_user = Utilisateur(
+        nom=nom,
+        prenom=prenom,
+        email=email,
+        telephone=telephone,
+        mot_de_passe=mot_de_passe,
+        role=role
+    )
+
+    try:
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while adding the user: " + str(e))
+
+    
+    
+    return RedirectResponse(url=f"/users" , status_code=200)
+
+
+@app.api_route("/delete-user/{user_id}",methods=["GET","POST"])
+async def delete_user(
+    user_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Delete a user by their ID.
+    """
+    # Fetch the user from the database
+    user_to_delete = db.query(Utilisateur).filter(Utilisateur.id_utilisateur == user_id).first()
+
+    # If the user does not exist, raise a 404 error
+    if not user_to_delete:
+        raise HTTPException(status_code=404, detail="User  not found")
+    
+    try:
+        # Delete the user
+        db.delete(user_to_delete)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while deleting the user: " + str(e))
+    
+    return RedirectResponse(url=f"/users" , status_code=200)
 
 
 

@@ -15,6 +15,8 @@ def get_db_status():
     return {"status": "Database is healthy"}
 
 
+
+
 def get_all_bien(db: Session = Depends(get_db)):
         property_details = db.query(Bien).all()
     
@@ -61,6 +63,9 @@ def get_users(db: Session = Depends(get_db)):
         users = db.query(Utilisateur).filter(Utilisateur.role!="admin" and Utilisateur.role!="agent").all()
         
         return users
+
+
+
 
 @db.get("/get-offers")
 def get_offers(db: Session = Depends(get_db)):
@@ -199,4 +204,45 @@ def add_transaction(
         raise HTTPException(status_code=500, detail="An error occurred while adding the sale: " + str(e))
 
     return {"message": "Vente registered successfully", "vente_id": new_trans.id_transaction}
+
+
+
+@db.post("/add_user")
+def add_user(
+    
+    nom: str,
+    prenom: str,
+    email: str,
+    telephone: str,
+    mot_de_passe: str,
+    role: str,
+    db#: Session = Depends(get_db)
+):
+    # Check if the user already exists
+    existing_user = db.query(Utilisateur).filter(Utilisateur.email == email).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="User already exists")
+
+    # Create a new user
+    new_user = Utilisateur(
+        nom=nom,
+        prenom=prenom,
+        email=email,
+        telephone=telephone,
+        mot_de_passe=mot_de_passe,
+        role=role
+    )
+
+    try:
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while adding the user: " + str(e))
+
+    return new_user
+
+
+
 

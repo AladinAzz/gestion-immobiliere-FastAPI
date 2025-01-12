@@ -1,0 +1,112 @@
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../static/pic.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Propriétés à Vendre</title>
+</head>
+<body class="bg-gray-100" style="background-image: url('../static/square-front-modern-office-buildings.jpg');background-size: cover;">
+    <header class="bg-black shadow">
+        <nav class="container mx-auto p-4 flex justify-between items-center">
+            <div class="logo">
+                <a href="accueil.html"><img src="../static/pic.png" alt="Logo de AADL 2.0" class="h-10"></a>
+            </div>
+            <ul class="flex space-x-4">
+                <li><a href="/" class="text-white hover:text-blue-500">Accueil</a></li>
+                <li><a href="/list" class="text-white hover:text-blue-500">Nos Propriétés</a></li>
+                <li><a href="/login" class="text-white hover:text-blue-500">Déconnexion</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4" style="min-height: 600px;">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">Liste des locations</h2>
+                <a href="/add-rec" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Ajouter une reclamation</a>
+            </div>
+            <ul class="w-full">
+                <li class="flex justify-between bg-gray-200 p-2 rounded-t-lg">
+                    <div class="w-1/12">Id location</div>
+                    <div class="w-1/12">id Bien</div>
+                    <div class="w-2/12">adresse</div>
+                    <div class="w-3/12">date debut</div>
+                    <div class="w-2/12">date fin</div>
+                    <div class="w-2/12">prix</div> 
+                    <div class="w-1/12">etat</div>
+                    <div class="w-2/12">montant payé</div>
+                </li>
+                
+                {% for prop in propbien %}
+                <li class="flex justify-between bg-white p-2 border-b">
+                    <div class="w-1/12">{{ prop.id_location }}</div>
+                    <div class="w-1/12"><a href="" onclick="fetchBienDetails( {{ prop.id_bien }} );/*don't correct this*/ return false;" >{{ prop.id_bien }}</a></div> 
+                    <div class="w-2/12">{{ prop.adresse }}</div>
+                    <div class="w-3/12">{{ prop.date_debut }}</div>
+                    <div class="w-2/12">{{ prop.date_fin }}</div>
+                    <div class="w-2/12">{{ prop.prix }}</div>
+                    <div class="w-1/12">{{ prop.etat.value }}</div>
+                    <div class="w-2/12">{{ prop.payment }}</div>
+                </li>
+                {% endfor %}
+                
+               
+            </ul>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-lg mt-6 relative" id="bien-details" hidden>
+            
+            <!-- Details will be displayed here -->
+        </div>
+    </main>
+
+
+    <footer class="bg-black shadow mt-4">
+        <div class="container mx-auto p-4 text-center">
+            <p class="text-white">© 2024 AADL 2.0. Tous droits réservés.</p>
+        </div>
+    </footer>
+    <script>
+        function toggleVisibility() {
+            const detailsSection = document.getElementById('bien-details');
+            
+            detailsSection.hidden = !detailsSection.hidden;
+            
+        }
+        async function fetchBienDetails(idBien) {
+    try {
+        const response = await fetch(`/get_bien/${idBien}`);
+        const data = await response.json();
+        // Since the API returns an array, we access the first element
+        if (data.length > 0) {
+            displayBienDetails(data[0]);  // Pass the first object to the display function
+        } else {
+            console.error('No details found for this property');
+        }
+    } catch (error) {
+        console.error('Error fetching bien details:', error);
+    }
+}
+
+function displayBienDetails(data) {
+    const detailsSection = document.getElementById('bien-details');
+    detailsSection.innerHTML = `
+        <button id="bien-details-button" class="absolute top-2 right-2 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg" onclick="toggleVisibility()">
+                <i class="fas fa-eye-slash"></i> Hide Details
+        </button>
+        <h3 class="text-xl font-bold mb-2">Détails du Bien</h3>
+        <p><strong>Id Bien:</strong> ${data.id_bien}</p>
+        <p><strong>Adresse:</strong> ${data.adresse}</p> <!-- Corrected "adress" to "adresse" -->
+        <p><strong>Superficie:</strong> ${data.superficie} m²</p>
+        <p><strong>Type:</strong> ${data.type}</p>
+        <p><strong>Ville:</strong> ${data.ville}</p>
+        <p><strong>Agent ID:</strong> ${data.id_agent}</p> <!-- Display Agent ID, adjust as needed -->
+    `;
+    detailsSection.hidden = false;
+    detailsSection.scrollIntoView({ behavior: 'smooth' });
+}
+
+       </script>
+</body>
+</html>
