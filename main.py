@@ -325,6 +325,8 @@ async def update_user(
     if not user_to_update:
         raise HTTPException(status_code=404, detail="User not found")
     
+    mot_de_passe=hash_password(mot_de_passe)
+
     user_to_update.nom = nom
     user_to_update.prenom = prenom
     user_to_update.email = email
