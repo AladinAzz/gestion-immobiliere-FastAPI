@@ -17,14 +17,14 @@
             <table class="min-w-full bg-white">
                 <thead>
                     <tr>
-                        <td class="py-2 px-4 border-b border-gray-200" style="font-weight: bold;">ID Vente</td>
-                        <td class="py-2 px-4 border-b border-gray-200" style="font-weight: bold;">Propriété</td>
-                        <td class="py-2 px-4 border-b border-gray-200" style="font-weight: bold;">Agent</td>
-                        <td class="py-2 px-4 border-b border-gray-200" style="font-weight: bold;">adress</td>
-                        <td class="py-2 px-4 border-b border-gray-200" style="font-weight: bold;">Date de Vente</td>
-                        <td class="py-2 px-4 border-b border-gray-200" style="font-weight: bold;">Montant Payé</td>
-                        <td class="py-2 px-4 border-b border-gray-200" style="font-weight: bold;">Prix</td>
-                        <td class="py-2 px-4 border-b border-gray-200" style="font-weight: bold;">État</td>
+                        <th class="py-2 px-4 border-b">ID Vente</th>
+                        <th class="py-2 px-4 border-b">Propriété</th>
+                        <th class="py-2 px-4 border-b">Agent</th>
+                        <th class="py-2 px-4 border-b">adresse</th>
+                        <th class="py-2 px-4 border-b">Date de Vente</th>
+                        <th class="py-2 px-4 border-b">Montant Payé</th>
+                        <th class="py-2 px-4 border-b">Prix</th>
+                        <th class="py-2 px-4 border-b">État</th>
                     </tr>
                     
                 </thead>
@@ -32,14 +32,14 @@
 
                     {% for prop in propbien %}
                 <tr >
-                    <td class="w-1/12">{{ prop.id_vente }}</td>
-                    <td class="w-1/12"><a href="" onclick="fetchBienDetails( {{ prop.id_bien }} );/*don't correct this*/ return false;" >{{ prop.id_bien }}</a></td> 
-                    <td class="w-2/12">{{ prop.id_agent }}</td>
-                    <td class="w-3/12">{{ prop.adresse }}</td>
-                    <td class="w-2/12">{{ prop.date_vente }}</td>
-                    <td class="w-2/12">{{ prop.montant_paye }}</td>
-                    <td class="w-1/12">{{ prop.prix }}</td>
-                    <td class="w-1/12">{{ prop.etat.name }}</td>
+                    <td class="py-2 px-4 border-b">{{ prop.id_vente }}</td>
+                    <td class="py-2 px-4 border-b"><a href="" onclick="fetchBienDetails( {{ prop.id_bien }} );/*don't correct this*/ return false;" >{{ prop.id_bien }}</a></td> 
+                    <td class="py-2 px-4 border-b">{{ prop.id_agent }}</td>
+                    <td class="py-2 px-4 border-b">{{ address[prop.id_vente] }}</td>
+                    <td class="py-2 px-4 border-b">{{ prop.date_vente }}</td>
+                    <td class="py-2 px-4 border-b">{{ prop.montant_paye }}</td>
+                    <td class="py-2 px-4 border-b">{{ prop.prix }}</td>
+                    <td class="py-2 px-4 border-b">{{ prop.etat.name }}</td>
                     
                 </tr>
                 {% endfor %}

@@ -203,16 +203,20 @@ def get_rental(request: Request, db: Session = Depends(get_db)):
 @app.get("/sales", response_class=HTMLResponse)
 def get_sale(request: Request, db: Session = Depends(get_db)):
     ventes = crud.get_sales(db)
-    if not ventes:
-        
-        for vente in ventes:
-        # Fetch the address associated with the Bien linked to this Vente
-            bien = db.query(Bien).filter(Bien.id_bien == vente.id_bien).first()
-            if bien:
-                vente.adresse = bien.adresse
+    
+    add={}
+    for vente in ventes:
+    # Fetch the address associated with the Bien linked to this Vente
+        bien = db.query(Bien).filter(Bien.id_bien == vente.id_bien).first()
+        if bien:
+            add[vente.id_vente]=bien.adresse 
     
         
-    return templates.TemplateResponse("liste_ventes.html", {"request": request, "title": "Locations", "propbien": ventes})
+    return templates.TemplateResponse("liste_ventes.html", {"request": request, "title": "Locations", "propbien": ventes,"address":add})
+
+
+
+
 @app.get("/transactions", response_class=HTMLResponse)
 def get_rental(request: Request, db: Session = Depends(get_db)):
     transactions = crud.get_transactions(db)
@@ -237,7 +241,7 @@ async def add_sale(request: Request, db: Session = Depends(get_db)):
 
 
 @app.get("/add-user")
-async def add_sale(request: Request, db: Session = Depends(get_db)):
+async def to_sale(request: Request, db: Session = Depends(get_db)):
         return templates.TemplateResponse("ajouter_utilisateur.html", {"request": request, "title": "add user"}) 
 
 @app.post("/add-user")
@@ -281,7 +285,7 @@ async def add_sale(
 
 
 @app.api_route("/delete-user/{user_id}",methods=["GET","POST"])
-async def delete_user(
+async def delete_user(request:Request,
     user_id: int,
     db: Session = Depends(get_db)
 ):
@@ -303,7 +307,177 @@ async def delete_user(
         db.rollback()
         raise HTTPException(status_code=500, detail="An error occurred while deleting the user: " + str(e))
     
+    return templates.TemplateResponse("agent.html", {"request": request, "title": "AGENT"})
+
+
+@app.post("/update-user")
+async def update_user(
+    nom: str = Form(...),
+    prenom: str = Form(...),
+    email: str = Form(...),
+    telephone: str = Form(...),
+    mot_de_passe: str = Form(...),
+    role: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    user_to_update = db.query(Utilisateur).filter(Utilisateur.email == email).first()
+    
+    if not user_to_update:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user_to_update.nom = nom
+    user_to_update.prenom = prenom
+    user_to_update.email = email
+    user_to_update.telephone = telephone
+    user_to_update.mot_de_passe = mot_de_passe
+    user_to_update.role = role
+    
+    try:
+        db.commit()
+        db.refresh(user_to_update)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while updating the user: " + str(e))
+    
     return RedirectResponse(url=f"/users" , status_code=200)
+
+
+
+@app.get("/update-user/{id_user}")
+def update_user(request:Request,id_user: int, db: Session = Depends(get_db)):
+    user=db.query(Utilisateur).filter(Utilisateur.id_utilisateur == id_user).first()
+    return templates.TemplateResponse("update_user.html", {"request": request, "title": "AGENT","user": user})
+
+
+
+
+
+
+@app.get("/add-bien")
+async def to_sale(request: Request, db: Session = Depends(get_db)):
+        return templates.TemplateResponse("ajouter_bien.html", {"request": request, "title": "add user"}) 
+
+@app.post("/add-bien")
+async def add_sale(
+    
+    
+    adresse: str = Form(...),
+    superficie: int =  Form(...),
+    etat: str = Form(...),
+    type: str = Form(...),
+    ville: str =Form(...),
+    
+    db: Session = Depends(get_db)
+):
+    
+        # Create a new user
+    existing_bien = db.query(Bien).filter(Bien.adresse == adresse , Bien.superficie==superficie,Bien.ville==ville).first()
+    if existing_bien:
+        raise HTTPException(status_code=400, detail="User already exists")
+
+    # Create a new user
+    new_bien = Bien(
+        
+        adresse=adresse,
+        superficie=superficie,
+        etat=etat,
+        type=type,
+        ville=ville,
+        
+    )
+
+    try:
+        db.add(new_bien)
+        db.commit()
+        db.refresh(new_bien)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while adding the Bien: " + str(e))
+
+    
+    
+    return RedirectResponse(url=f"/bien" , status_code=200)
+
+
+
+@app.api_route("/delete-bien/{bien_id}",methods=["GET","POST"])
+async def delete_user(request:Request,
+    bien_id: int,
+    db: Session = Depends(get_db)
+):
+    
+    bien_to_delete = db.query(Bien).filter(Bien.id_bien == bien_id).first()
+
+    # If the user does not exist, raise a 404 error
+    if not bien_to_delete:
+        raise HTTPException(status_code=404, detail="User  not found")
+    if bien_to_delete.etat=="dispo":
+        try:
+        # Delete the user
+            db.delete(bien_to_delete)
+            db.commit()
+        except Exception as e:
+            db.rollback()
+            raise HTTPException(status_code=500, detail="An error occurred while deleting the user: " + str(e))
+    else:
+        raise HTTPException(status_code=400, detail="Bien can't be deleted")
+    return templates.TemplateResponse("agent.html", {"request": request, "title": "AGENT"})
+
+
+
+
+
+
+@app.post("/update-bien")
+async def update_user(
+     
+    adresse: str = Form(...),
+    superficie: int =  Form(...),
+    etat: str = Form(...),
+    type: str = Form(...),
+    ville: str =Form(...),
+    
+    db: Session = Depends(get_db)
+):
+    bien_to_update = db.query(Bien).filter(Bien.adresse == adresse,Bien.ville==ville ).first()
+    
+    if not bien_to_update:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    bien_to_update.adresse = adresse
+    bien_to_update.superficie = superficie
+    bien_to_update.etat = etat
+    bien_to_update.type = type
+    bien_to_update.ville = ville
+    
+    
+    try:
+        db.commit()
+        db.refresh(bien_to_update)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while updating the bien: " + str(e))
+    
+    return RedirectResponse(url=f"/bien" , status_code=200)
+
+
+
+@app.get("/update-bien/{id_bien}")
+def update_user(request:Request,id_bien: int, db: Session = Depends(get_db)):
+    bien=db.query(Bien).filter(Bien.id_bien == id_bien).first()
+    return templates.TemplateResponse("update_bien.html", {"request": request, "title": "AGENT","bien": bien})
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

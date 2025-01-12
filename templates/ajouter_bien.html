@@ -1,0 +1,54 @@
+<html lang="fr"></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../static/pic.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Ajouter un utilisateur</title>
+</head>
+<body class="bg-gray-100">
+    <main class="container mx-auto p-4">
+       
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold mb-4">Ajouter un utilisateur</h2>
+            <form action="/add-bien" method="POST" class="space-y-4">
+                <div>
+                    <label for="adresse" class="block text-sm font-medium text-gray-700">adresse</label>
+                    <input type="text" name="adresse" id="adresse" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="Superficie" class="block text-sm font-medium text-gray-700">Superficie</label>
+                    <input type="number" name="superficie" id="Superficie" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="etat" class="block text-sm font-medium text-gray-700">etat</label>
+                    <select name="etat" id="etat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                        <option value="loue">loué</option>
+                        <option value="vendu">vendu</option>
+                        <option value="dispo">disponible</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="type" class="block text-sm font-medium text-gray-700">type</label>
+                    <select name="type" id="type" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                        <option value="maison">maison</option>
+                        <option value="villa">villa</option>
+                        <option value="appartement">appartement</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="ville" class="block text-sm font-medium text-gray-700">ville</label>
+                    <input type="text" name="ville" id="ville" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                
+                
+               
+                <div>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Ajouter le Bien</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

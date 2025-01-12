@@ -12,7 +12,7 @@
         <div class="bg-white p-6 rounded-lg shadow-lg">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold">Liste Biens</h2>
-                <a href="/add-Bien" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Ajouter un Bien</a>
+                <a href="/add-bien" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Ajouter un Bien</a>
             </div>
             <table class="min-w-full bg-white">
                 <thead>
@@ -41,14 +41,26 @@
                         <td class="py-2 px-4 border-b">{{ bien.id_proprietaire }}</td>
                         <td class="py-2 px-4 border-b">{{ bien.id_agent }}</td>
                         <td class="py-2 px-4 border-b">
-                            <button class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">Modifier</button>
-                            <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Supprimer</button>
+                            <button class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onclick="UpdateBien({{ bien.id_bien }})">Modifier</button>
+                            <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onclick="deleteBien({{ bien.id_bien }})">Supprimer</button>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+        <script>
+            function deleteBien(id_bien) {
+                if (confirm("Voulez-vous supprimer cet utilisateur ?")) {
+                    window.parent.location.href = "/delete-bien/" + id_bien;
+                    }
+                    }
+            function UpdateBien(id_bien) {
+               
+                    window.location.href = "/update-bien/" + id_bien;
+                    
+                    }
     
+        </script>
 </body>
 </html>
