@@ -43,16 +43,27 @@
                         <td class="py-2 px-4 border-b">{{ location.etat.name }}</td>
                         <td class="py-2 px-4 border-b">{{ location.payment }}</td>
                         <td class="py-2 px-4 border-b">
-                            <button class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">Modifier</button>
-                            <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Supprimer</button>
+                            <button class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"  onclick="Updateoffre({{ location.id_location }})">Modifier</button>
+                            <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onclick="deleteoffre({{ location.id_location }})">Supprimer</button>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-   
-
+        </div>  
+        <script>
+            function deleteoffre(id_bien) {
+                if (confirm("Voulez-vous supprimer cet utilisateur ?")) {
+                    window.parent.location.href = "/delete-loc/" + id_bien;
+                    }
+                    }
+            function Updateoffre(id_bien) {
+               
+                    window.location.href = "/update-loc/" + id_bien;
+                    
+                    }
+    
+        </script>
     
 </body>
 </html>

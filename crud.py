@@ -31,6 +31,10 @@ def get_bien(id_bien: int,db: Session = Depends(get_db)):
         
         return property_details
 
+@db.get("/get-dispo-bien")
+def get_dispo_bien(db: Session = Depends(get_db)):
+    bien = db.query(Bien).filter(Bien.etat=="dispo").all()
+    return bien
 
 @db.get("/get-user",response_model=UtilisateurResponse)
 def get_user(id_utilisateur: int, db: Session = Depends(get_db))->UtilisateurResponse:
@@ -66,10 +70,15 @@ def get_users(db: Session = Depends(get_db)):
 
 
 
-
+@db.get("/get-offer")
+def get_offer(db: Session = Depends(get_db)):
+      offers = db.query(Offre).filter(Offre.etat=="actif").all()
+      
+      return offers
 @db.get("/get-offers")
 def get_offers(db: Session = Depends(get_db)):
       offers = db.query(Offre).all()
+      
       return offers
 
 @db.get("/get-rentals")
@@ -138,7 +147,7 @@ def get_transaction_by_agent(agent_id: int, db: Session = Depends(get_db)):
 def add_vente(
     id_bien: str = Form(...),
     id_agent: str = Form(...),
-    id_proprietaire: str = Form(...),
+    id_utilisateur: str = Form(...),
     date_vente: str = Form(...),
     prix: str = Form(...),
     montant_paye: str = Form(...),
@@ -149,11 +158,20 @@ def add_vente(
     if existing_vente:
         raise HTTPException(status_code=400, detail="Vente already exists")
 
+    existing_prop = db.query(Proprietaire).filter(Proprietaire.id_utilisateur == id_utilisateur).first()
+
+    if not existing_prop :
+         new_prop=Proprietaire(
+              id_utilisateur=id_utilisateur
+         )
+         
+         db.add(new_prop)
+         existing_prop = db.query(Proprietaire).filter(Proprietaire.id_utilisateur == id_utilisateur).first()
     # Create a new vente
     new_vente = Vente(
         id_bien=id_bien,
         id_agent=id_agent,
-        id_proprietaire=id_proprietaire,
+        id_proprietaire=existing_prop.id_proprietaire,
         date_vente=date_vente,
         prix=prix,
         montant_paye=montant_paye,

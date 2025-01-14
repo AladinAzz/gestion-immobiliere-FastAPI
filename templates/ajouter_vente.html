@@ -15,15 +15,18 @@
             <form action="/add-sale" method="POST" class="space-y-4">
                 <div>
                     <label for="id_bien" class="block text-sm font-medium text-gray-700">ID Bien</label>
-                    <input type="number" name="id_bien" id="id_bien" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                    <select name="id_bien" id="id_bien" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                        <!-- Options will be populated dynamically -->
+                    </select>
                 </div>
+                
                 <div>
                     <label for="id_agent" class="block text-sm font-medium text-gray-700">ID Agent</label>
                     <input type="number" name="id_agent" id="id_agent" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
                 </div>
                 <div>
-                    <label for="id_proprietaire" class="block text-sm font-medium text-gray-700">ID Propriétaire</label>
-                    <input type="number" name="id_proprietaire" id="id_proprietaire" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                    <label for="id_proprietaire" class="block text-sm font-medium text-gray-700">ID utilisateur</label>
+                    <input type="number" name="id_utilisateur" id="id_proprietaire" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
                 </div>
                 <div>
                     <label for="date_vente" class="block text-sm font-medium text-gray-700">Date de Vente</label>
@@ -52,5 +55,47 @@
             </form>
         </div>
     </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                // Fetch sales data from the server
+                const response = await fetch('/db/get-offer');
+                const salesData = await response.json();
+                
+                // Populate the ID Bien <select> options
+                const idBienSelect = document.getElementById('id_bien');
+                salesData.forEach(sale => {
+                    if (sale.type=="vente")  {
+                    const option = document.createElement('option');
+                    option.value = sale.id_bien;
+                    option.textContent = `ID Bien: ${sale.id_bien}`;
+                    idBienSelect.appendChild(option);
+                }
+                });
+    
+                // Handle the change event to update form fields
+                idBienSelect.addEventListener('change', (event) => {
+                    const selectedId = event.target.value;
+                    const selectedSale = salesData.find(sale => sale.id_bien == selectedId);
+    
+                    if (selectedSale) {
+                        document.getElementById('id_agent').value = selectedSale.id_agent;
+                        
+                        document.getElementById('prix').value = selectedSale.montant;
+                        
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching sales data:', error);
+            }
+        });
+    </script>
+    
+
+
 </body>
+
+
+
+
 </html>

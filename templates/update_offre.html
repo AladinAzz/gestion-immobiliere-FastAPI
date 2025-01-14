@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../static/pic.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Ajouter une Vente</title>
+</head>
+<body class="bg-gray-100">
+    <main class="container mx-auto p-4">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold mb-4">Ajouter un offre</h2>
+            <form action="/update-offre" method="POST" class="space-y-4">
+                <div>
+                    <label for="id_offre" class="block text-sm font-medium text-gray-700">ID Offre</label>
+                    <select name="id_offre" id="id_offre" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                <div>
+                    <label for="id_bien" class="block text-sm font-medium text-gray-700">ID Bien</label>
+                    <input type="number" name="id_bien" id="id_bien" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="id_agent" class="block text-sm font-medium text-gray-700">ID Agent</label>
+                    <input type="number" name="id_agent" id="id_agent" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="date_debut" class="block text-sm font-medium text-gray-700">Date Début</label>
+                    <input type="date" name="date_debut" id="date_debut" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="date_fin" class="block text-sm font-medium text-gray-700">Date Fin</label>
+                    <input type="date" name="date_fin" id="date_fin" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="montant" class="block text-sm font-medium text-gray-700">Montant</label>
+                    <input type="number" step="0.01" name="montant" id="montant" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="etat" class="block text-sm font-medium text-gray-700">État</label>
+                    <select name="etat" id="etat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                        <option value="actif">Actif</option>
+                        <option value="inactif">Inactif</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">modifier l'offre</button>
+                </div>
+            </form>
+        </div>
+    </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                // Fetch offers data from the server
+                const response = await fetch('/db/get-offer');
+                const offersData = await response.json();
+
+                // Populate the ID Bien <select> options
+                const idBienSelect = document.getElementById('id_offre');
+                offersData.forEach(offer => {
+                    const option = document.createElement('option');
+                    option.value = offer.id_offre;
+                    option.textContent = `ID Bien: ${offer.id_offre}`;
+                    idBienSelect.appendChild(option);
+                });
+
+                // Handle the change event to update form fields
+                idBienSelect.addEventListener('change', (event) => {
+                    const selectedId = event.target.value;
+                    const selectedOffer = offersData.find(offer => offer.id_bien == selectedId);
+
+                    if (selectedOffer) {
+                        document.getElementById('id_bien').value = selectedOffer.id_bien;
+                        document.getElementById('id_agent').value = selectedOffer.id_agent;
+                        document.getElementById('date_debut').value = selectedOffer.date_debut;
+                        document.getElementById('date_fin').value = selectedOffer.date_fin;
+                        document.getElementById('montant').value = selectedOffer.montant;
+                        document.getElementById('etat').value = selectedOffer.etat;
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching offers data:', error);
+            }
+        });
+    </script>
+</body>
+</html>

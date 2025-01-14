@@ -224,18 +224,57 @@ def get_rental(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse("transactions.html", {"request": request, "title": "Locations", "transactions": transactions})
 
 
-@app.api_route("/add-sale",methods=["GET","POST"])
-async def add_sale(request: Request, db: Session = Depends(get_db)):
-    if request.method == "POST":
-        # Get the data from the form
-        data = await request.json()
-        # Create a new Vente
-        
-        vente = crud.add_vente(db, data)  
-        # Redirect to the new Vente
-        return RedirectResponse(url=f"/sales" , status_code=200)
-    
+@app.post("/add-sale")
+async def add_sale(request: Request, 
+    id_bien: str = Form(...),
+    id_agent: str = Form(...),
+    id_utilisateur: str = Form(...),
+    date_vente: str = Form(...),
+    prix: str = Form(...),
+    montant_paye: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    # Check if the vente already exists
+    existing_vente = db.query(Vente).filter(Vente.id_bien == id_bien).first()
+    if existing_vente:
+        raise HTTPException(status_code=400, detail="Vente already exists")
     else:
+       existing_offre = db.query(Offre).filter(Offre.id_bien == id_bien).first() 
+       existing_offre.etat="expire"
+    
+    existing_prop = db.query(Proprietaire).filter(Proprietaire.id_utilisateur == id_utilisateur).first()
+
+    if not existing_prop :
+         new_prop=Proprietaire(
+              id_utilisateur=id_utilisateur
+         )
+         
+         db.add(new_prop)
+         existing_prop = db.query(Proprietaire).filter(Proprietaire.id_utilisateur == id_utilisateur).first()
+    # Create a new vente
+    new_vente = Vente(
+        id_bien=id_bien,
+        id_agent=id_agent,
+        id_proprietaire=existing_prop.id_proprietaire,
+        date_vente=date_vente,
+        prix=prix,
+        montant_paye=montant_paye,
+    )
+
+
+    try:
+        db.add(new_vente)
+        db.commit()
+        db.refresh(new_vente)
+    except Exception as e:
+        db.rollback()  # Rollback the session in case of an error
+        raise HTTPException(status_code=500, detail="An error occurred while adding the sale: " + str(e))
+
+    
+    return RedirectResponse(url=f"/sales" , status_code=200)
+    
+@app.get("/add-sale")
+def addS(request:Request):
         return templates.TemplateResponse("ajouter_vente.html", {"request": request, "title": "ventes"}) 
 
 
@@ -333,7 +372,7 @@ async def update_user(
     user_to_update.telephone = telephone
     user_to_update.mot_de_passe = mot_de_passe
     user_to_update.role = role
-    
+
     try:
         db.commit()
         db.refresh(user_to_update)
@@ -423,11 +462,7 @@ async def delete_user(request:Request,
             raise HTTPException(status_code=500, detail="An error occurred while deleting the user: " + str(e))
     else:
         raise HTTPException(status_code=400, detail="Bien can't be deleted")
-    return templates.TemplateResponse("agent.html", {"request": request, "title": "AGENT"})
-
-
-
-
+    return RedirectResponse(url=f"/bien" , status_code=200)
 
 
 @app.post("/update-bien")
@@ -451,8 +486,8 @@ async def update_user(
     bien_to_update.etat = etat
     bien_to_update.type = type
     bien_to_update.ville = ville
-    
-    
+
+
     try:
         db.commit()
         db.refresh(bien_to_update)
@@ -468,6 +503,203 @@ async def update_user(
 def update_user(request:Request,id_bien: int, db: Session = Depends(get_db)):
     bien=db.query(Bien).filter(Bien.id_bien == id_bien).first()
     return templates.TemplateResponse("update_bien.html", {"request": request, "title": "AGENT","bien": bien})
+
+
+
+
+
+@app.get("/add-offre")
+async def to_sale(request: Request, db: Session = Depends(get_db)):
+        return templates.TemplateResponse("ajouter_offre.html", {"request": request, "title": "add user"}) 
+
+@app.post("/add-offre")
+async def add_off(
+    id_agent: int =Form(...),
+    id_bien: int = Form(...),
+    montant: float = Form(...),
+    date_debut: str = Form(...),
+    date_fin: str = Form(...),
+    type: str = Form(...),
+   
+    db: Session = Depends(get_db)
+):
+    
+        # Create a new user
+    existing_user = db.query(Offre).filter(Offre.id_bien == id_bien,Offre.etat=="actif").first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="offre already exists")
+
+    # Create a new user
+    new_offre = Offre(
+        id_agent=id_agent,
+        id_bien=id_bien,
+        montant=montant,
+        date_debut=date_debut,
+        date_fin=date_fin,
+        type=type,
+        etat="actif"
+    )
+
+    try:
+        db.add(new_offre)
+        db.commit()
+        db.refresh(new_offre)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while adding the offre: " + str(e))
+
+    
+    
+    return RedirectResponse(url=f"/offers" , status_code=200)
+
+
+@app.api_route("/delete-offre/{offre_id}",methods=["GET","POST"])
+async def delete_user(
+    offre_id: int,
+    db: Session = Depends(get_db)
+):
+    # Query the offer to delete
+    bien_to_delete = db.query(Offre).filter(Offre.id_offre == offre_id).first()
+
+    # If the offer does not exist, raise a 404 error
+    if not bien_to_delete:
+        raise HTTPException(status_code=404, detail="Offer not found")
+
+    try:
+        # Delete the offer
+        db.delete(bien_to_delete)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while deleting the offer: " + str(e))
+
+    # Redirect to the offers page after successful deletion
+    return RedirectResponse(url="/offers", status_code=303)
+
+
+
+@app.post("/update-offre")
+async def update_offre(
+    id_offre: int = Form(...),
+    id_agent: int = Form(...),
+    id_bien: int = Form(...),
+    montant: float = Form(...),
+    date_debut: str = Form(...),
+    date_fin: str = Form(...),
+    type: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    # Query the offer to update
+    bien_to_update = db.query(Offre).filter(Offre.id_offre == id_offre).first()
+    
+    # If the offer does not exist, raise a 404 error
+    if not bien_to_update:
+        raise HTTPException(status_code=404, detail="Offer not found")
+    
+    # Update the offer fields
+    bien_to_update.id_agent = id_agent
+    bien_to_update.id_bien = id_bien
+    bien_to_update.montant = montant
+    bien_to_update.date_debut = date_debut
+    bien_to_update.date_fin = date_fin
+    bien_to_update.type = type
+
+    try:
+        # Commit the changes to the database
+        db.commit()
+        db.refresh(bien_to_update)
+    except Exception as e:
+        # Rollback in case of an error
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while updating the offer: " + str(e))
+    
+    # Redirect to the bien page after successful update
+    return RedirectResponse(url="/bien", status_code=303)
+
+
+@app.get("/update-offre/{id_offre}")
+def update_user(request:Request,id_offre: int, db: Session = Depends(get_db)):
+    bien=db.query(Offre).filter(Offre.id_offre == id_offre).first()
+    return templates.TemplateResponse("update_offre.html", {"request": request, "title": "Offre","bien": bien})
+
+######################################
+
+@app.api_route("/delete-trans/{trans_id}",methods=["GET","POST"])
+async def delete_transaction(
+    trans_id: int,
+    db: Session = Depends(get_db)
+):
+    # Query the database to find the transaction to delete
+    bien_to_delete = db.query(Transaction).filter(Transaction.id_transaction == trans_id).first()
+
+    # If the transaction does not exist, raise a 404 error
+    if not bien_to_delete:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+
+    try:
+        # Delete the transaction
+        db.delete(bien_to_delete)
+        db.commit()
+    except Exception as e:
+        # Rollback in case of an error
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while deleting the transaction: " + str(e))
+
+    # Redirect to the rentals page after successful deletion
+    return RedirectResponse(url="/transaction", status_code=303)
+
+
+@app.post("/update-trans")
+async def update_location(
+    id_transaction: int = Form(...),
+    montant: int = Form(...),
+    date: str = Form(...),
+    id_vente: int = Form(...),
+    id_location: int = Form(...),
+    db: Session = Depends(get_db)
+):
+    # Query the database to find the transaction to update
+    bien_to_update = db.query(Transaction).filter(Transaction.id_transaction == id_transaction).first()
+    
+    # If the transaction is not found, raise a 404 error
+    if not bien_to_update:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    
+    # Update the transaction fields
+    bien_to_update.Montant = montant
+    bien_to_update.Date = date  # Assuming Date is in "YYYY-MM-DD" format
+    bien_to_update.id_vente = id_vente
+    bien_to_update.id_location = id_location
+    try:
+        # Commit the changes to the database
+        db.commit()
+        db.refresh(bien_to_update)
+    except Exception as e:
+        # Rollback in case of an error
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while updating the offer: " + str(e))
+    
+    # Redirect to the bien page after successful update
+    return RedirectResponse(url="/transaction", status_code=303)
+
+
+@app.get("/update-trans/{id_bien}")
+def update_user(request:Request,id_bien: int, db: Session = Depends(get_db)):
+    bien=db.query(Transaction).filter(Transaction.id_transaction == id_bien).first()
+    return templates.TemplateResponse("update_transaction.html", {"request": request, "title": "AGENT","bien": bien})
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

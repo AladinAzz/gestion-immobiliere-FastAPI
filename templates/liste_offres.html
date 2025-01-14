@@ -12,7 +12,7 @@
         <div class="bg-white p-6 rounded-lg shadow-lg">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold">Liste des offres</h2>
-                <a href="/add-Bien" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Ajouter un Offre</a>
+                <a href="/add-offre" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Ajouter un Offre</a>
             </div>
             <table class="min-w-full bg-white">
                 <thead>
@@ -40,14 +40,26 @@
                         <td class="py-2 px-4 border-b">{{ offer.type.name }}</td>
                         <td class="py-2 px-4 border-b">{{ offer.etat.name }}</td>
                         <td class="py-2 px-4 border-b">
-                            <button class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">Modifier</button>
-                            <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Supprimer</button>
+                            <button class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onclick="Updateoffre({{ offer.id_offre }})">Modifier</button>
+                            <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onclick="deleteoffre({{ offer.id_offre }})">Supprimer</button>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+        <script>
+            function deleteoffre(id_bien) {
+                if (confirm("Voulez-vous supprimer cet utilisateur ?")) {
+                    window.parent.location.href = "/delete-offre/" + id_bien;
+                    }
+                    }
+            function Updateoffre(id_bien) {
+               
+                    window.location.href = "/update-offre/" + id_bien;
+                    
+                    }
     
+        </script>
 </body>
 </html>
