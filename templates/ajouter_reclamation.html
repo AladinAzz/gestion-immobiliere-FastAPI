@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../static/pic.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Ajouter une transaction</title>
+</head>
+<body class="bg-gray-100">
+    <main class="container mx-auto p-4">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold mb-4">Ajouter une reclamation</h2>
+            <form action="/add-rec" method="POST" class="space-y-4">
+                
+                <div id="L" >
+                    <label for="id_location" class="block text-sm font-medium text-gray-700">ID Location</label>
+                    <input type="number" step="0.01" name="id_location" id="id_location" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                
+               
+                <div>
+                    <label for="id_locataire" class="block text-sm font-medium text-gray-700">id locataire</label>
+                    <input type="number"  name="id_locataire" id="id_locataire" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700">description</label>
+                    <input  type="text"  name="description" id="description" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="etat" class="block text-sm font-medium text-gray-700">etat</label>
+                    <input  type="text" step="0.01" name="etat" id="etat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Ajouter la transaction</button>
+                </div>
+            </form>
+        </div>
+    </main>
+    
+    </script>
+</body>
+</html>

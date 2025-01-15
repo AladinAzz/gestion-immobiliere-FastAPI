@@ -12,9 +12,12 @@
         <div class="bg-white p-6 rounded-lg shadow-lg">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold">Accès Utilisateurs</h2>
+                
+                <button class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onclick="printTable()">Imprimer</button>
                 <a href="/add-user" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Ajouter un Utilisateur</a>
+                
             </div>
-            <table class="min-w-full bg-white">
+            <table id="table" class="min-w-full bg-white">
                 <thead>
                     <tr>
                         <th class="py-2 px-4 border-b">ID</th>
@@ -36,8 +39,8 @@
                         <td class="py-2 px-4 border-b">{{ user.telephone }}</td>
                         <td class="py-2 px-4 border-b">{{ user.role.name }}</td>
                         <td class="py-2 px-4 border-b">
-                            <button class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onclick="UpdateUser({{ user.id_utilisateur }})" >Modifier</button>
-                            <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onclick="deleteUser({{ user.id_utilisateur }})">Supprimer</button>
+                            <button class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onclick="UpdateUser ({{ user.id_utilisateur }})" >Modifier</button>
+                            <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onclick="deleteUser ({{ user.id_utilisateur }})">Supprimer</button>
                         </td>
                     </tr>
                     {% endfor %}
@@ -52,12 +55,27 @@
                 window.parent.location.href = "/delete-user/" + id_utilisateur;
                 }
                 }
-        function UpdateUser(id_utilisateur) {
+        function UpdateUser (id_utilisateur) {
            
                 window.location.href = "/update-user/" + id_utilisateur;
                 
                 }
-
+        function printTable() {
+            var printContents = document.getElementById('table').outerHTML;
+            var table = document.createElement('table');
+            table.innerHTML = printContents;
+            var rows = table.rows;
+            for (var i = 0; i < rows.length; i++) {
+                var cells = rows[i].cells;
+                if (cells.length > 6) {
+                    cells[6].remove();
+                }
+            }
+            var popupWin = window.open('', '_blank', 'width=1000,height=600');
+            popupWin.document.open();
+            popupWin.document.write('<html><head><title>Print Table</title></head><body onload="window.print()">' + table.outerHTML + '</body></html>');
+            popupWin.document.close();
+        }
     </script>
 </body>
 </html>

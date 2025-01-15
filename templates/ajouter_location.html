@@ -6,13 +6,13 @@
     <link rel="icon" href="../static/pic.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Ajouter une Vente</title>
+    <title>Ajouter une Location</title>
 </head>
 <body class="bg-gray-100">
     <main class="container mx-auto p-4">
         <div class="bg-white p-6 rounded-lg shadow-lg">
-            <h2 class="text-2xl font-bold mb-4">Ajouter une Vente</h2>
-            <form action="/add-sale" method="POST" class="space-y-4">
+            <h2 class="text-2xl font-bold mb-4">Ajouter une Location</h2>
+            <form action="/add-loc" method="POST" class="space-y-4">
                 <div>
                     <label for="id_bien" class="block text-sm font-medium text-gray-700">ID Bien</label>
                     <select name="id_bien" id="id_bien" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
@@ -29,28 +29,32 @@
                     <input type="number" name="id_utilisateur" id="id_proprietaire" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
                 </div>
                 <div>
-                    <label for="date_vente" class="block text-sm font-medium text-gray-700">Date de Vente</label>
-                    <input type="date" name="date_vente" id="date_vente" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                    <label for="date_debut" class="block text-sm font-medium text-gray-700">Date de debut</label>
+                    <input type="date" name="date_debut" id="date_debut" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="date_fin" class="block text-sm font-medium text-gray-700">Date de fin</label>
+                    <input type="date" name="date_fin" id="date_fin" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
                 </div>
                 <div>
                     <label for="prix" class="block text-sm font-medium text-gray-700">Prix</label>
-                    <input type="number" step="0.01" name="prix" id="prix" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                    <input type="number" step="0.01" name="prix" id="prix" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required >
                 </div>
                 <div>
-                    <label for="montant_paye" class="block text-sm font-medium text-gray-700">Montant Payé</label>
-                    <input type="number" step="0.01" name="montant_paye" id="montant_paye" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                    <label for="payement" class="block text-sm font-medium text-gray-700">Montant Payé</label>
+                    <input type="number" step="0.01" name="payment" id="payement" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
                 </div>
                 <div>
                     <label for="etat" class=" block text-sm font-medium text-gray-700">État</label>
                     <select name="etat" id="etat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
-                        <option value="non_payée">Non Payée</option>
-                        <option value="payée">Payée</option>
+                        <option value="non_payée">non payée</option>
+                        <option value="payee">Payée</option>
                         
                         <option value="terminé">Terminée</option>
                     </select>
                 </div>
                 <div>
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Ajouter la Vente</button>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Ajouter la location</button>
                 </div>
             </form>
         </div>
@@ -65,7 +69,7 @@
                 // Populate the ID Bien <select> options
                 const idBienSelect = document.getElementById('id_bien');
                 salesData.forEach(sale => {
-                    if (sale.type == "vente") {
+                    if (sale.type == "location" && sale.etat == "actif") {
                         const option = document.createElement('option');
                         option.value = sale.id_bien;
                         option.textContent = `ID Bien: ${sale.id_bien}`;
@@ -89,6 +93,26 @@
                 alert('Une erreur est survenue lors de la récupération des données des ventes.');
             }
         });
+        document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        // ...
+
+        // Add an event listener to the form submission
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (e) => {
+            const dateDebut = document.getElementById('date_debut').value;
+            const dateFin = document.getElementById('date_fin').value;
+
+            // Check if date_debut is before date_fin
+            if (new Date(dateDebut) >= new Date(dateFin)) {
+                alert('La date de début doit être avant la date de fin');
+                e.preventDefault();
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching offers data:', error);
+    }
+});
     </script>
 </body>
 </html>

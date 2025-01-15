@@ -42,7 +42,11 @@ async def read_list(request: Request):
 
 @app.api_route("/agent",methods=["GET","POST"], response_class=HTMLResponse)
 async def read_list(request: Request):
-    return templates.TemplateResponse("agent.html", {"request": request, "title": "Nos Propriétés"})
+    return templates.TemplateResponse("agent.html", {"request": request, "title": "Agent"})
+
+@app.api_route("/admin",methods=["GET","POST"], response_class=HTMLResponse)
+async def read_list(request: Request):
+    return templates.TemplateResponse("admin.html", {"request": request, "title": "Admin"})
 
 
 @app.get("/get_bien/{id_bien}")
@@ -76,7 +80,7 @@ def get_available_biens(db: Session = Depends(get_db)):
 
 
 @app.api_route("/prop/{id_user}",methods=["GET","POST"])
-async def get_bien(request: Request,id_user: int, db: Session = Depends(get_db) ):
+async def get_bbien(request: Request,id_user: int, db: Session = Depends(get_db) ):
     
     Prop=db.query(Proprietaire).filter(Proprietaire.id_utilisateur == id_user).first()
     if not Prop:
@@ -94,13 +98,14 @@ async def get_bien(request: Request,id_user: int, db: Session = Depends(get_db) 
         bien = db.query(Bien).filter(Bien.id_bien == vente.id_bien).first()
         if bien:
             vente.adresse = bien.adresse  # Add the address to the vente object
-        
+    versement=db.query(RapportFinancier).filter(RapportFinancier.id_proprietaire == Prop.id_proprietaire).all()
     # Pass the vente_details to the read_list function along with the request
-    return await read_listt(request=request, vente_details=vente_details)
+    return await read_listtt(request=request, vente_details=vente_details,versement=versement)
 
-async def read_listt(request: Request, vente_details: List):
+async def read_listtt(request: Request, vente_details: List,versement:List,db: Session = Depends(get_db)):
     # Render the HTML template and pass the vente_details as 'propbien'
-    return templates.TemplateResponse("prop.html", {"request": request, "title": "Mes Propriétés", "propbien": vente_details})
+    
+    return templates.TemplateResponse("prop.html", {"request": request, "title": "Mes Propriétés", "propbien": vente_details,"versement":versement})
 
 
 @app.api_route("/loc/{id_user}",methods=["GET","POST"])
@@ -122,11 +127,11 @@ async def get_bien(request: Request,id_user: int, db: Session = Depends(get_db) 
         bien = db.query(Bien).filter(Bien.id_bien == vente.id_bien).first()
         if bien:
             vente.adresse = bien.adresse  # Add the address to the vente object
-        
+    versement=db.query(PaiementLoyer).filter(PaiementLoyer.id_locataire == Location.id_locataire).all()    
     # Pass the vente_details to the read_list function along with the request
-    return await read_listt(request=request, vente_details=location_details)
+    return await read_listt(request=request, vente_details=location_details,versement=versement)
 
-async def read_listt(request: Request, vente_details: List):
+async def read_listt(request: Request, vente_details: List,versement:List):
     # Render the HTML template and pass the vente_details as 'propbien'
     return templates.TemplateResponse("locataire.html", {"request": request, "title": "Mes Locations", "propbien": vente_details})
 
@@ -193,6 +198,12 @@ def get_rental(request: Request, db: Session = Depends(get_db)):
 def get_rental(request: Request, db: Session = Depends(get_db)):
     users = crud.get_users(db)
     return templates.TemplateResponse("acces_utilisateurs.html", {"request": request, "title": "Users", "users": users})
+@app.get("/allusers", response_class=HTMLResponse)
+def get_rental(request: Request, db: Session = Depends(get_db)):
+    users = crud.get_all_users(db)
+    return templates.TemplateResponse("acces_utilisateurs.html", {"request": request, "title": "Users", "users": users})
+
+
 
 @app.get("/offers", response_class=HTMLResponse)
 def get_rental(request: Request, db: Session = Depends(get_db)):
@@ -250,12 +261,21 @@ async def add_sale(request: Request,
          )
          
          db.add(new_prop)
-         existing_prop = db.query(Proprietaire).filter(Proprietaire.id_utilisateur == id_utilisateur).first()
+         db.commit()
+         db.refresh(new_prop)
+         
+    user=db.query(Utilisateur).filter(Utilisateur.id_utilisateur==id_utilisateur).first()
+    if user.role == "visit":
+        user.role="proprietaire"
+
+    db.commit()
+    db.refresh(user)
+
     # Create a new vente
     new_vente = Vente(
         id_bien=id_bien,
         id_agent=id_agent,
-        id_proprietaire=existing_prop.id_proprietaire,
+        id_proprietaire=new_prop.id_proprietaire,
         date_vente=date_vente,
         prix=prix,
         montant_paye=montant_paye,
@@ -620,9 +640,108 @@ async def update_offre(
 @app.get("/update-offre/{id_offre}")
 def update_user(request:Request,id_offre: int, db: Session = Depends(get_db)):
     bien=db.query(Offre).filter(Offre.id_offre == id_offre).first()
-    return templates.TemplateResponse("update_offre.html", {"request": request, "title": "Offre","bien": bien})
+    return templates.TemplateResponse("update_offre.html", {"request": request, "title": "Offre","offer": bien})
 
 ######################################
+@app.post("/add-trans")
+async def add_trans(
+    montant: int = Form(...),
+    id_vente: Optional[int] = Form(None),
+    id_location: Optional[int] = Form(None),
+    db: Session = Depends(get_db)
+):
+    # Create a new Transaction object
+    if id_vente is None:
+        new_trans = Transaction(
+            montant=montant,
+            date_transaction=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # Use current date and time
+            id_location=id_location
+        )
+    else:
+        new_trans = Transaction(
+            montant=montant,
+            date_transaction=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # Use current date and time
+            id_vente=id_vente
+        )
+    
+    try:
+        # Add the new transaction to the database
+        db.add(new_trans)
+        db.commit()
+        db.refresh(new_trans)
+
+        # If id_vente is provided, fetch id_proprietaire and insert into rapport_financiere
+        if id_vente is not None:
+            # Fetch id_proprietaire from the vente table
+            vente = db.query(Vente).filter(Vente.id_vente == id_vente).first()
+            if not vente:
+                raise HTTPException(status_code=404, detail="Vente not found")
+
+            id_proprietaire = vente.id_proprietaire
+            vente.montant_paye=vente.montant_paye+montant
+
+            db.commit()
+            db.refresh(vente)
+            # Create a new RapportFinanciere record
+            new_rapport = RapportFinancier(
+                id_proprietaire=id_proprietaire,
+                id_transaction=new_trans.id_transaction,
+                montant=montant,
+                date_rapport=datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Use current date and time
+            )
+
+            # Add the new rapport_financiere to the database
+            db.add(new_rapport)
+            db.commit()
+            db.refresh(new_rapport)
+# If id_location is provided, insert into paiement_loyer
+        if id_location is not None:
+            # Fetch id_locataire from the location table
+            location = db.query(Location).filter(Location.id_location == id_location).first()
+            if not location:
+                raise HTTPException(status_code=404, detail="Location not found")
+
+            
+            location.payment = location.payment+ montant
+    
+            try:
+        
+                db.commit()
+                db.refresh(location)
+            except Exception as e:
+        # Rollback in case of an error
+                db.rollback()
+                raise HTTPException(status_code=500, detail="An error occurred while updating the location: " + str(e))
+    
+
+
+            id_locataire = location.id_locataire
+            
+            # Create a new PaiementLoyer record
+            new_paiement = PaiementLoyer(
+                id_locataire=id_locataire,
+                id_location=id_location,
+                montant=montant,
+                date_paiement=datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Use current date and time
+            )
+
+            # Add the new paiement_loyer to the database
+            db.add(new_paiement)
+            db.commit()
+            db.refresh(new_paiement)
+    except Exception as e:
+        # Rollback in case of an error
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while adding the transaction: " + str(e))
+    
+    # Redirect to the transactions page after successful addition
+    return RedirectResponse(url="/transactions", status_code=303)
+@app.get("/add-trans")
+def update_user(request:Request, db: Session = Depends(get_db)):
+    return templates.TemplateResponse("ajouter_transaction.html", {"request": request, "title": "Transaction"})
+    
+
+
 
 @app.api_route("/delete-trans/{trans_id}",methods=["GET","POST"])
 async def delete_transaction(
@@ -637,6 +756,8 @@ async def delete_transaction(
         raise HTTPException(status_code=404, detail="Transaction not found")
 
     try:
+
+
         # Delete the transaction
         db.delete(bien_to_delete)
         db.commit()
@@ -646,7 +767,7 @@ async def delete_transaction(
         raise HTTPException(status_code=500, detail="An error occurred while deleting the transaction: " + str(e))
 
     # Redirect to the rentals page after successful deletion
-    return RedirectResponse(url="/transaction", status_code=303)
+    return RedirectResponse(url="/transactions", status_code=303)
 
 
 @app.post("/update-trans")
@@ -680,7 +801,7 @@ async def update_location(
         raise HTTPException(status_code=500, detail="An error occurred while updating the offer: " + str(e))
     
     # Redirect to the bien page after successful update
-    return RedirectResponse(url="/transaction", status_code=303)
+    return RedirectResponse(url="/transactions", status_code=303)
 
 
 @app.get("/update-trans/{id_bien}")
@@ -688,11 +809,191 @@ def update_user(request:Request,id_bien: int, db: Session = Depends(get_db)):
     bien=db.query(Transaction).filter(Transaction.id_transaction == id_bien).first()
     return templates.TemplateResponse("update_transaction.html", {"request": request, "title": "AGENT","bien": bien})
 
+##############################################
+@app.post("/add-loc")
+async def add_location(
+    id_bien: int = Form(...),
+    date_debut: str = Form(...),
+    date_fin: str = Form(...),
+    prix: int = Form(...),
+    id_utilisateur: int = Form(...),
+    etat: str = Form(...),
+    payment: int = Form(...),
+    db: Session = Depends(get_db)
+):
+    # Query the database to check if a location already exists for the given id_bien and is not canceled
+    existing_location = db.query(Location).filter(
+        Location.id_bien == id_bien,
+        Location.etat != "annuler"
+    ).first()
+    
+    # If a location already exists, raise a 400 error (Bad Request)
+    if existing_location:
+        raise HTTPException(status_code=400, detail="A location for this property already exists and is not canceled.")
+    
+    locataire=db.query(Locataire).filter(Locataire.id_utilisateur==id_utilisateur).first()
+    if locataire is None:
+        new_locataire = Locataire(
+            id_utilisateur=id_utilisateur
+        )
+        db.add(new_locataire)
+        db.commit()
+        db.refresh(new_locataire)
+        user=db.query(Utilisateur).filter(Utilisateur.id_utilisateur==id_utilisateur).first()
+        if user.role == "visit":
+            user.role="locataire"
+
+    
+    
+    else:
+        new_locataire=locataire
+
+
+    # Create a new Location object
+    new_location = Location(
+        id_bien=id_bien,
+        date_debut=datetime.strptime(date_debut, "%Y-%m-%d"),  # Convert string to date
+        date_fin=datetime.strptime(date_fin, "%Y-%m-%d"),  # Convert string to date
+        prix=prix,
+        id_locataire=new_locataire.id_locataire,
+        etat=etat,
+        payment=payment
+    )
+    
+    try:
+        # Add the new location to the database
+        db.add(new_location)
+        db.commit()
+        db.refresh(new_location)
+    except Exception as e:
+        # Rollback in case of an error
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while adding the location: " + str(e))
+    
+    # Return the newly created location
+    
+    return RedirectResponse(url="/rentals", status_code=303)
+
+
+@app.get("/add-loc")
+async def to_sale(request: Request, db: Session = Depends(get_db)):
+        return templates.TemplateResponse("ajouter_location.html", {"request": request, "title": "add rental"}) 
+
+@app.api_route("/delete-loc/{loc_id}",methods=["GET","POST"])
+async def delete_transaction(
+    loc_id: int,
+    db: Session = Depends(get_db)
+):
+    # Query the database to find the transaction to delete
+    bien_to_delete = db.query(Location).filter(Location.id_location == loc_id).first()
+
+    # If the transaction does not exist, raise a 404 error
+    if not bien_to_delete:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+
+    try:
+        # Delete the transaction
+        db.delete(bien_to_delete)
+        db.commit()
+    except Exception as e:
+        # Rollback in case of an error
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while deleting the transaction: " + str(e))
+
+    # Redirect to the rentals page after successful deletion
+    return RedirectResponse(url="/rentals", status_code=303)
+
+
+@app.post("/update-loc")
+async def update_location(
+    
+    id_bien: int = Form(...),
+    date_debut: str = Form(...),
+    date_fin: str = Form(...),
+    prix: int = Form(...),
+    
+    etat: str = Form(...),
+    payment: int = Form(...),
+    db: Session = Depends(get_db)
+):
+    # Query the database to find the location to update
+    bien_to_update = db.query(Location).filter(Location.id_bien == id_bien and ( Location.etat!="terminé" and Location.etat!="annulé")).first()
+    
+    # If the location is not found, raise a 404 error
+    if not bien_to_update:
+        raise HTTPException(status_code=404, detail="Location not found")
+    
+    # Update the location fields
+    bien_to_update.id_bien = id_bien
+    bien_to_update.date_debut = date_debut  # Convert string to date
+    bien_to_update.date_fin = date_fin  # Convert string to date
+    bien_to_update.prix = prix
+    
+    bien_to_update.etat = etat
+    bien_to_update.payment = payment
+    
+    try:
+        # Commit the changes to the database
+        db.commit()
+        db.refresh(bien_to_update)
+    except Exception as e:
+        # Rollback in case of an error
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while updating the location: " + str(e))
+    
+    # Redirect to the transactions page after successful update
+    return RedirectResponse(url="/rentals", status_code=303)
+
+@app.get("/update-loc/{id_bien}")
+def update_user(request:Request,id_bien: int, db: Session = Depends(get_db)):
+    bien=db.query(Location).filter(Location.id_location == id_bien).first()
+    return templates.TemplateResponse("update_loc.html", {"request": request, "title": "AGENT","loc": bien})
 
 
 
+#################################
 
 
+@app.get("/add-rec")
+async def to_rec(request: Request, db: Session = Depends(get_db)):
+        return templates.TemplateResponse("ajouter_reclamation.html", {"request": request, "title": "add user"}) 
+
+@app.post("/add-rec")
+async def add_rec(
+    
+    id_location: int = Form(...),
+    
+    description: str = Form(...),
+    
+    etat: str = Form(...),
+   
+    db: Session = Depends(get_db)
+):
+    
+        # Create a new user
+    existing_user = db.query(DemandeMaintenance).filter(DemandeMaintenance.id_location == id_location).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="offre already exists")
+
+    # Create a new user
+    new_rec = Offre(
+        id_location=id_location,
+        description=description,
+        etat=etat
+       
+    )
+
+    try:
+        db.add(new_rec)
+        db.commit()
+        db.refresh(new_rec)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while adding the offre: " + str(e))
+
+    
+    
+    return RedirectResponse(url=f"/" , status_code=200)
 
 
 

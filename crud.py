@@ -68,7 +68,11 @@ def get_users(db: Session = Depends(get_db)):
         
         return users
 
-
+@db.get("/get-all-users")
+def get_all_users(db: Session = Depends(get_db)):
+        users = db.query(Utilisateur).all()
+        
+        return users
 
 @db.get("/get-offer")
 def get_offer(db: Session = Depends(get_db)):

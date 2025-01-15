@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../static/pic.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Ajouter une Location</title>
+</head>
+<body class="bg-gray-100">
+    <main class="container mx-auto p-4">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold mb-4">Ajouter une Location</h2>
+            <form action="/update-loc" method="POST" class="space-y-4">
+                <div>
+                    <label for="id_bien" class="block text-sm font-medium text-gray-700">ID Bien</label>
+                    <input value="{{loc.id_bien}}" type="number" name="id_bien" id="id_bien" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                
+                
+                <div>
+                    <label for="id_locataire" class="block text-sm font-medium text-gray-700">ID Locataire</label>
+                    <input value="{{loc.id_locataire}}" type="number" name="id_utilisateur" id="id_locataire" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="date_debut" class="block text-sm font-medium text-gray-700">Date de debut</label>
+                    <input value="{{loc.date_debut}}" type="date" name="date_debut" id="date_debut" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="date_fin" class="block text-sm font-medium text-gray-700">Date de fin</label>
+                    <input value="{{loc.date_fin}}" type="date" name="date_fin" id="date_fin" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="prix" class="block text-sm font-medium text-gray-700">Prix</label>
+                    <input value="{{loc.prix}}" type="number" step="0.01" name="prix" id="prix" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="payement" class="block text-sm font-medium text-gray-700">Montant Payé</label>
+                    <input value="{{loc.payment}}" type="number" step="0.01" name="payment" id="payement" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="etat" class=" block text-sm font-medium text-gray-700">État</label>
+                    <select value="{{loc.etat}}" name="etat" id="etat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                        <option value="non_payée">non payée</option>
+                        <option value="payée">Payée</option>
+                        <option value="retard">retard</option>
+                        <option value="annuler">annulé</option>
+                        <option value="terminé">Terminée</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Ajouter la location</button>
+                </div>
+            </form>
+        </div>
+    </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        // ...
+
+        // Add an event listener to the form submission
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (e) => {
+            const dateDebut = document.getElementById('date_debut').value;
+            const dateFin = document.getElementById('date_fin').value;
+
+            // Check if date_debut is before date_fin
+            if (new Date(dateDebut) >= new Date(dateFin)) {
+                alert('La date de début doit être avant la date de fin');
+                e.preventDefault();
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching offers data:', error);
+    }
+});
+    </script>
+</body>
+</html>

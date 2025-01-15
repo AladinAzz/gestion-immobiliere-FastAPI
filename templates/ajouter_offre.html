@@ -6,13 +6,13 @@
     <link rel="icon" href="../static/pic.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Ajouter une Vente</title>
+    <title>Ajouter un offre</title>
 </head>
 <body class="bg-gray-100">
     <main class="container mx-auto p-4">
         <div class="bg-white p-6 rounded-lg shadow-lg">
             <h2 class="text-2xl font-bold mb-4">Ajouter un offre</h2>
-            <form action="/add-offer" method="POST" class="space-y-4">
+            <form action="/add-offre" method="POST" class="space-y-4">
                 <div>
                     <label for="id_bien" class="block text-sm font-medium text-gray-700">ID Bien</label>
                     <select name="id_bien" id="id_bien" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
@@ -44,6 +44,13 @@
                     </select>
                 </div>
                 <div>
+                    <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
+                    <select  name="type" id="type" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                        <option value="location">Location</option>
+                        <option value="Vente">Vente</option>
+                    </select>
+                </div>
+                <div>
                     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">ajouter l'offre</button>
                 </div>
             </form>
@@ -52,11 +59,11 @@
     <script>
         document.addEventListener("DOMContentLoaded", async () => {
             try {
-                // Fetch offers data from the server
+                
                 const response = await fetch('/db/get-dispo-bien');
                 const offersData = await response.json();
 
-                // Populate the ID Bien <select> options
+                
                 const idBienSelect = document.getElementById('id_bien');
                 offersData.forEach(offer => {
                     const option = document.createElement('option');
@@ -65,12 +72,33 @@
                     idBienSelect.appendChild(option);
                 });
 
-                // Handle the change event to update form fields
+                
                 
             } catch (error) {
                 console.error('Error fetching offers data:', error);
             }
         });
+
+        document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        // ...
+
+        // Add an event listener to the form submission
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (e) => {
+            const dateDebut = document.getElementById('date_debut').value;
+            const dateFin = document.getElementById('date_fin').value;
+
+            // Check if date_debut is before date_fin
+            if (new Date(dateDebut) >= new Date(dateFin)) {
+                alert('La date de début doit être avant la date de fin');
+                e.preventDefault();
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching offers data:', error);
+    }
+});
     </script>
 </body>
 </html>

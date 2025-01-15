@@ -50,6 +50,30 @@
                
             </ul>
         </div>
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold mb-4">Votre versements</h2>
+            <ul class="w-full">
+                <li class="flex justify-between bg-gray-200 p-2 rounded-t-lg">
+                    <div class="w-1/12">Id Paiement</div>
+                    
+                     
+                    <div class="w-1/12">Montant</div>
+                    <div class="w-2/12">date Paiement</div>
+                </li>
+                
+                {% for prop in versement %}
+                <li class="flex justify-between bg-white p-2 border-b">
+                    <div class="w-1/12">{{ prop.id_transaction }}</div>
+                    
+                    <div class="w-2/12">{{ prop.montant }}</div>
+                    <div class="w-2/12">{{ prop.date_rapport }}</div>
+                    
+                </li>
+                {% endfor %}
+                
+               
+            </ul>
+        </div>
         <div class="bg-white p-6 rounded-lg shadow-lg mt-6 relative" id="bien-details" hidden>
             
             <!-- Details will be displayed here -->

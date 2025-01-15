@@ -12,9 +12,11 @@
         <div class="bg-white p-6 rounded-lg shadow-lg">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold">Liste des offres</h2>
+                <button class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onclick="printTable()">Imprimer</button>
                 <a href="/add-offre" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Ajouter un Offre</a>
+                
             </div>
-            <table class="min-w-full bg-white">
+            <table id="table" class="min-w-full bg-white">
                 <thead>
                     <tr>
                         <th class="py-2 px-4 border-b">ID Offre</th>
@@ -59,7 +61,22 @@
                     window.location.href = "/update-offre/" + id_bien;
                     
                     }
-    
+            function printTable() {
+                var printContents = document.getElementById('table').outerHTML;
+                var table = document.createElement('table');
+                table.innerHTML = printContents;
+                var rows = table.rows;
+                for (var i = 0; i < rows.length; i++) {
+                    var cells = rows[i].cells;
+                    if (cells.length > 8) {
+                        cells[8].remove();
+                    }
+                }
+                var popupWin = window.open('', '_blank', 'width=1000,height=600');
+                popupWin.document.open();
+                popupWin.document.write('<html><head><title>Print Table</title></head><body onload="window.print()">' + table.outerHTML + '</body></html>');
+                popupWin.document.close();
+            }
         </script>
 </body>
 </html>
